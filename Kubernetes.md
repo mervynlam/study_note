@@ -78,7 +78,8 @@
     `KUBELET_EXTRA_ARGS="--fail-swap-on=false"`
     5. 使用`kubeadm init`初始化  
     `kubeadm init --kubernetes-version=v1.17.2 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.96.0.0/12 --ignore-preflight-errors=Swap --image-repository registry.aliyuncs.com/google_containers`  
-    记录生成的`kubeadm join`完整命令
+    记录生成的`kubeadm join`完整命令  
+    若失败，需重新初始化，则重置kubeadm `kubeadm reset`
     6. 初始化kubectl  
     ```
     mkdir -p $HOME/.kube
