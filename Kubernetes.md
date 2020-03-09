@@ -98,10 +98,12 @@
         2. 导入镜像到服务器上，（master和nodes服务器都要）  
         `docker load -i flannelv0.11.0-amd64.tar`
         3. 再执行该命令  
-        `kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml`
+        `kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml`  
         如果之前安装过，没有成功，则先删除  
-        `kubectl delete -f kube-flannel.yml`
-    8. 验证master节点
+        `kubectl delete -f kube-flannel.yml`  
+        查看flannel是否成功启动  
+        `kubectl get pods -n kube-system`
+    8. 验证master节点  
     `kubectl get nodes`
 3. 添加node节点到集群中
     1. 同上操作：
@@ -237,9 +239,3 @@
 - ExecAction：在容器内部执行指定的命令，如果命令以状态代码 0 退出，则认为诊断成功。
 - TCPSocketAction：对指定 IP 和端口的容器执行 TCP 检查，如果端口打开，则认为诊断成功。
 - HTTPGetAction：对指定 IP + port + path路径上的容器的执行 HTTP Get 请求。如果响应的状态代码大于或等于 200 且小于 400，则认为诊断成功。
-
-
-
-
-
-    > kubeadm join 192.168.75.129:6443 --token t9opqt.1z3g5v6xfdrsdhkn --discovery-token-ca-cert-hash sha256:bf53912fce86fdd30e0599afb3106e9f8280834b63999ad1c456ff185b5056b3 --ignore-preflight-errors=Swap
