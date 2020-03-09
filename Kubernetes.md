@@ -66,10 +66,13 @@
     modprobe bridge
     modprobe br_netfilter
     ```
+    3. 启动docker、kubelet
+    ```
+    systemctl start docker kubelet
+    ```
     3. 设置kubelet、docker开机自启动  
     ```
-    systemctl enable kubelet  
-    systemctl enable docker
+    systemctl enable kubelet docker
     ```
     4. 编辑kubelet配置文件`/etc/sysconfig/kubelet`，设置忽略Swap启动的状态错误  
     `KUBELET_EXTRA_ARGS="--fail-swap-on=false"`
