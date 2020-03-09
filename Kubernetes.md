@@ -59,6 +59,13 @@
     echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
     echo 1 > /proc/sys/net/bridge/bridge-nf-call-ip6tables
     ```
+    如果提示`No such file or directory`
+    ``` bash
+    #安装bridge-util软件，加载bridge模块，加载br_netfilter模块
+    yum install -y bridge-utils
+    modprobe bridge
+    modprobe br_netfilter
+    ```
     3. 设置kubelet、docker开机自启动  
     ```
     systemctl enable kubelet  
