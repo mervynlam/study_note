@@ -21,7 +21,33 @@
 #### 前提
 - 各节点时间同步
 - 各节点主机名称解析
-- 各节点iptables及firewalld服务器被disabled;
+    ```
+    hostname master
+    hostnamectl set-hostname master
+    ```
+    ```
+    vim /etc/hosts
+    192.168.xx.xx master
+    192.168.xx.xx node01
+    192.168.xx.xx node02
+    #等等
+    ```
+- 各节点iptables及firewalld服务器被disabled
+    ```
+    systemctl stop firewalld
+    systemctl disable firewalld
+    ```
+- 关闭selinux
+    ```
+    sed -i 's/enforcing/disabled/' /etc/selinux/config
+    setenforce 0
+    ```
+- 关闭swap
+    ```
+    swapoff -a  # 临时
+    vim /etc/fstab  # 永久
+    #注释掉swap行
+    ```
 
 #### 步骤
 1. 设置各节点安装程序包
@@ -34,9 +60,10 @@
     [kubernetes]
     name=Kubernetes Repo
     baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
-    gpgcheck=0
-    gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
     enabled=1
+    gpgcheck=1
+    repo_gpgcheck=1
+    gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
     ```
     3. 安装  
     `yum install docker-ce kubelet kubeadm kubectl -y` node节点可不安装kubectl
@@ -66,26 +93,27 @@
     modprobe bridge
     modprobe br_netfilter
     ```
-    3. 启动docker、kubelet
-    ```
-    systemctl start docker kubelet
-    ```
     3. 设置kubelet、docker开机自启动  
     ```
     systemctl enable kubelet docker
     ```
     4. 编辑kubelet配置文件`/etc/sysconfig/kubelet`，设置忽略Swap启动的状态错误  
     `KUBELET_EXTRA_ARGS="--fail-swap-on=false"`
-    5. 使用`kubeadm init`初始化  
+    5. 启动docker、kubelet
+    ```
+    systemctl start docker kubelet
+    ```
+    6. 使用`kubeadm init`初始化  
     `kubeadm init --kubernetes-version=v1.17.2 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.96.0.0/12 --ignore-preflight-errors=Swap --image-repository registry.aliyuncs.com/google_containers`  
     记录生成的`kubeadm join`完整命令  
-    若失败，需重新初始化，则重置kubeadm `kubeadm reset`
-    6. 初始化kubectl  
+    若失败，需重新初始化，则重置kubeadm  
+    `kubeadm reset`
+    7. 初始化kubectl  
     ```
     mkdir -p $HOME/.kube
     cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
     ```
-    7. 部署flannel  
+    8. 部署flannel  
     `kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml`  
     如果下载失败：
         1. 从其他服务器下载镜像，修改tag，再打包
@@ -103,7 +131,7 @@
         `kubectl delete -f kube-flannel.yml`  
         查看flannel是否成功启动  
         `kubectl get pods -n kube-system`
-    8. 验证master节点  
+    9. 验证master节点  
     `kubectl get nodes`
 3. 添加node节点到集群中
     1. 同上操作：
@@ -235,7 +263,7 @@
 ### 容器探测
 - `livenessProbe`：指示容器是否正在运行，如果活动探测失败，则 kubelet 会杀死容器，并且容器将受其重启策略的约束。如果不指定活动探测，默认状态是 Success。
 - `readinessProbe`：指示容器是否已准备好为请求提供服务，如果准备情况探测失败，则控制器会从与 Pod 匹配的所有服务的端点中删除 Pod 的 IP 地址。初始化延迟之前的默认准备状态是 Failure，如果容器未提供准备情况探测，则默认状态为 Success。
-####探针类型
+#### 探针类型
 - ExecAction：在容器内部执行指定的命令，如果命令以状态代码 0 退出，则认为诊断成功。
 - TCPSocketAction：对指定 IP 和端口的容器执行 TCP 检查，如果端口打开，则认为诊断成功。
 - HTTPGetAction：对指定 IP + port + path路径上的容器的执行 HTTP Get 请求。如果响应的状态代码大于或等于 200 且小于 400，则认为诊断成功。
