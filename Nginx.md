@@ -84,14 +84,15 @@ Nginx 配置文件主要部分：
     ```
     server {
         # 监听端口
+        # 可以多个server节点监听同一个端口，不同域名区分，访问不同的入口文件
         listen 80;
 
         # 域名可以有多个，用空格隔开
         server_name mervyn.com www.mervyn.com;
 
         # 入口文件
-        index index.jsp index.html;
         root /usr/local/nginx/html
+        index index.jsp index.html;
     }
     ```
 - `upstream` 的指令用于设置一系列的后端服务器，设置反向代理及后端服务器的负载均衡  
@@ -146,7 +147,7 @@ Nginx 配置文件主要部分：
     ```
 - `location` 部分用于匹配网页位置（比如，根目录“/”，“/images”，等等）
     ```
-    # / 为路径，比如访问 www.mervyn.com 即进入 / 路径， www.mervyn.com/project 即进入 /project 路径
+    # / 为路径，比如访问 http://ip:80/ 即进入 / 路径， http://ip:80/project 即进入 /project 路径
     location / {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header Host $host;
