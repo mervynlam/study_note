@@ -4,6 +4,7 @@
 - 反向代理
 - 动静分离
 - 高可用
+- 高并发
 
 默认监听80端口，反向代理到各个tomcat服务器，实现负载均衡，高并发
 
@@ -71,9 +72,10 @@ vim /etc/rc.local
 /usr/local/nginx/sbin/nginx
 ```
 
-## 修改配置
+## 修改配置（负载均衡、动静分离）
 ```
 cd /usr/local/nginx/conf
+cp nginx.conf nginx.conf.bak # 备份
 vim nginx.conf
 ```
 
@@ -89,10 +91,6 @@ Nginx 配置文件主要部分：
 
         # 域名可以有多个，用空格隔开
         server_name mervyn.com www.mervyn.com;
-
-        # 入口文件
-        root /usr/local/nginx/html
-        index index.jsp index.html;
     }
     ```
 - `upstream` 的指令用于设置一系列的后端服务器，设置反向代理及后端服务器的负载均衡  
@@ -101,6 +99,8 @@ Nginx 配置文件主要部分：
         # 负载均衡，weight为权重，权重越高被分配到的几率越高
         server 192.168.177.135:8080 weight=3;
         server 192.168.177.135:8081 weight=1;
+
+        # ip_hash
 
         # max_fails：允许请求失败的次数默认为1.当超过最大次数时，返回proxy_next_upstream模块定义的错误
         # fail_timeout:max_fails次失败后，暂停的时间。
