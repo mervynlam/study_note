@@ -219,6 +219,8 @@ Nacos是针对微服务架构中的服务发现、配置管理、服务治理的
 
 3. `bootstrap.yml` 配置
 
+   选择`bootstrap.yml`而非`application.yml`是因为`bootstrap.yml`启动优先级高于`application.yml`
+
    ```yaml
    server:
      port: 56010 #启动端口 命令行注入
@@ -358,8 +360,207 @@ B方式中多个配置优先级为：n越大，优先级越高。
            server-addr: 127.0.0.1:8848, 127.0.0.1:8849, 127.0.0.1:8850 # 配置集群地址
    ```
 
-
 ## Nacos 服务发现
+
+### Nacos 服务发现 - 快速入门
+
+1. 创建父工程
+
+   `pom.xml`
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <project xmlns="http://maven.apache.org/POM/4.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+       <modelVersion>4.0.0</modelVersion>
+   
+       <groupId>com.mervyn</groupId>
+       <artifactId>nacos_discovery</artifactId>
+       <version>1.0-SNAPSHOT</version>
+       <packaging>pom</packaging>
+   
+       <properties>
+           <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+           <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+           <java.version>1.8</java.version>
+       </properties>
+   
+       <dependencyManagement>
+           <dependencies>
+               <dependency>
+                   <groupId>com.alibaba.cloud</groupId>
+                   <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                   <version>2.1.0.RELEASE</version>
+                   <type>pom</type>
+                   <scope>import</scope>
+               </dependency>
+               <dependency>
+                   <groupId>org.springframework.cloud</groupId>
+                   <artifactId>spring-cloud-dependencies</artifactId>
+                   <version>Greenwich.RELEASE</version>
+                   <type>pom</type>
+                   <scope>import</scope>
+               </dependency>
+               <dependency>
+                   <groupId>org.springframework.boot</groupId>
+                   <artifactId>spring-boot-dependencies</artifactId>
+                   <version>2.1.3.RELEASE</version>
+                   <type>pom</type>
+                   <scope>import</scope>
+               </dependency>
+           </dependencies>
+       </dependencyManagement>
+   
+       <build>
+           <plugins>
+               <plugin>
+                   <groupId>org.springframework.boot</groupId>
+                   <artifactId>spring-boot-maven-plugin</artifactId>
+               </plugin>
+           </plugins>
+       </build>
+   </project>
+   ```
+
+2. 创建子工程 - 服务生产者
+
+   1. `pom.xml`
+
+       ```xml
+       <dependencies>
+           <dependency>
+               <groupId>com.alibaba.cloud</groupId>
+               <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+           </dependency>
+
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-web</artifactId>
+           </dependency>
+
+           <dependency>
+               <groupId>org.springframework.cloud</groupId>
+               <artifactId>spring-cloud-starter-openfeign</artifactId>
+           </dependency>
+       </dependencies>
+       ```
+   
+   2. `application.yml`
+   
+       ```yaml
+       server:
+         port: 56010
+       spring:
+         application:
+           name: quickstart-provider # 不支持_下划线
+         cloud:
+           nacos:
+             discovery:
+               server-addr: 127.0.0.1:8848
+       logging:
+         level:
+           root: info
+           org.springframework: info
+       ```
+   
+   3. 创建`controller`提供接口
+   
+       ```java
+       @RestController
+       public class ProviderController {
+       
+           private static final Logger LOG = LoggerFactory.getLogger(ProviderController.class);
+       
+           @GetMapping("/service")
+           public String service() {
+               LOG.info("provider service");
+               return "provider service";
+           }
+       }
+       ```
+   
+   4. 创建启动程序
+   
+       ```java
+       @SpringBootApplication
+       //开启feign远程链接
+       @EnableFeignClients
+       //是一个注册发现客户端
+       @EnableDiscoveryClient
+       public class NacosProviderApp {
+       
+           public static void main(String[] args) {
+               SpringApplication.run(NacosProviderApp.class, args);
+           }
+       
+       }
+       ```
+   
+3. 创建子工程 - 服务消费者
+
+   1. `pom.xml` 同上
+
+   2. `application.yml`
+
+      ```yaml
+      server:
+        port: 56020
+      spring:
+        application:
+          name: quickstart-consumer
+        cloud:
+          nacos:
+            discovery:
+              server-addr: 127.0.0.1:8848
+      ```
+
+   3. 创建 服务生产者的客户端 接口
+
+      ```java
+      @FeignClient(name = "quickstart-provider")
+      public interface ProviderClient {
+      
+          @GetMapping("/service")
+          public String service();
+      
+      }
+      ```
+
+   4. 创建 服务消费者 功能实现
+
+      ```java
+      @RestController
+      public class ConsumerController {
+      
+          @Autowired
+          private ProviderClient providerClient;
+      
+          @GetMapping("service")
+          public String service() {
+              String providerResult = providerClient.service();
+              return "consumer invoke | " + providerResult;
+          }
+      
+      }
+      ```
+
+   5. 创建 服务消费者 启动类
+
+      ```java
+      @SpringBootApplication
+      @EnableDiscoveryClient
+      @EnableFeignClients
+      public class NacosConsumerApp {
+      
+          public static void main(String[] args) {
+              SpringApplication.run(NacosConsumerApp.class, args);
+          }
+      
+      }
+      ```
+
+      
 
 ## 参考资料
 
