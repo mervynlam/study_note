@@ -128,6 +128,11 @@ Java Virtual Machine - Java 程序运行环境
 
 方法区在申请内存时如果内存不足了，会抛出`OutOfMemoryError`
 
+**组成与实现**
+jdk8以前和jdk8以后方法区的区别，其中最主要的区别是8以后将方法区转移到本地内存中，且常量池分为运行时常量池和字符串常量池；且字符串常量池被留在内存中的堆中。
+
+![image-20200723173607047](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200723173607047.png)
+
 # 参考资料
 
 [理解JVM - 黑马程序员](https://www.bilibili.com/video/BV1yE411Z7AP)
