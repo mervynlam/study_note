@@ -58,7 +58,7 @@
     - master和node只需有手动安装kubelet和docker
     - master和node中的组件运行为pod（static pod）
     - flannel运行为pod，托管在k8s集群中 
-### kubeadm部署
+### 使用 kubeadm 部署 Kubernetes
 kubeadm是官方社区推出的一个用于快速部署kubernetes集群的工具。
 
 这个工具能通过两条指令完成一个kubernetes集群的部署：

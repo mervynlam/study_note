@@ -6,7 +6,9 @@ Typora 是一款非常好用的跨平台“所见即所得”的 Markdown 编辑
 
 所以今天学习一下使用 PicGO + Github 建立自己的图床。
 
-## 软件下载
+## 软件下载及安装
+
+[Nodejs](https://nodejs.org/en/download/)
 
 [Typora](http://typora.io/)
 

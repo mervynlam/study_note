@@ -1,6 +1,8 @@
-<!--20200616-->
+[TOC]
 
 # 什么是JVM
+
+<!--20200616-->
 
 **定义**
 
@@ -131,7 +133,7 @@ Java Virtual Machine - Java 程序运行环境
 **组成与实现**
 jdk8以前和jdk8以后方法区的区别，其中最主要的区别是8以后将方法区转移到本地内存中，且常量池分为运行时常量池和字符串常量池；且字符串常量池被留在内存中的堆中。
 
-![image-20200723173607047](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200723173607047.png)
+![image-20200723173607047](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821112312.png)
 
 # 参考资料
 
