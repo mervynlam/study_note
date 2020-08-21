@@ -13,30 +13,30 @@
 默认监听80端口，反向代理到各个tomcat服务器，实现负载均衡，高并发
 
 ## 安装
-1. 下载 nginx 压缩包到`/usr/local`目录  
-    [nginx官网下载](http://nginx.org/en/download.html)  
+1. 下载 nginx 压缩包到`/usr/local`目录
+    [nginx官网下载](http://nginx.org/en/download.html)
     ```
     cd /usr/local
     wget http://nginx.org/download/nginx-1.17.9.tar.gz
     ```
 2. 安装 nginx 所需环境
-    1. 安装 gcc  
-        安装 nginx 需要先将官网下载的源码进行编译，编译依赖 gcc 环境。  
+    1. 安装 gcc
+        安装 nginx 需要先将官网下载的源码进行编译，编译依赖 gcc 环境。
         ```
         yum install -y gcc-c++
         ```
-    2. 安装 pcre  
-        PCRE (Perl Compatible Regular Expressions) 是一个 Perl 库，包括 perl 兼容的正则表达式库。Nginx 的 http 模块使用 pcre 来解析正则表达式。  
+    2. 安装 pcre
+        PCRE (Perl Compatible Regular Expressions) 是一个 Perl 库，包括 perl 兼容的正则表达式库。Nginx 的 http 模块使用 pcre 来解析正则表达式。
         pcre-devel 是使用 pcre 开发的一个二次开发库。Nginx 也需要此库。
         ```
         yum install -y pcre pcre-devel
         ```
-    3. 安装 zlib  
+    3. 安装 zlib
         zlib 库提供了很多压缩和解压缩算法，在 Nginx 的各种模块中需要使用 gzip 压缩。
         ```
         yum install -y zlib zlib-devel
         ```
-    4. 安装 open ssl  
+    4. 安装 open ssl
         nginx 不仅支持 http 协议，还支持 https （即在 ssl 协议上传输 http），如果使用了 https，需要安装 OpenSSL 库。
         ```
         yum install -y openssl openssl-devel
@@ -53,7 +53,7 @@
     make install
     ```
 
-## 启动、停止 nginx  
+## 启动、停止 nginx
 ```
 #进入 nginx 目录
 cd /usr/local/nginx
@@ -83,10 +83,10 @@ cp nginx.conf nginx.conf.bak # 备份
 vim nginx.conf
 ```
 
-Nginx 配置文件主要部分：  
+Nginx 配置文件主要部分：
 
-- `main` 部分设置的指令影响其他所有部分的设置  
-- `server` 部分的指令主要用于制定虚拟主机域名、IP 和端口号  
+- `main` 部分设置的指令影响其他所有部分的设置
+- `server` 部分的指令主要用于制定虚拟主机域名、IP 和端口号
     ```
     server {
         # 监听端口
@@ -97,7 +97,7 @@ Nginx 配置文件主要部分：
         server_name mervyn.com www.mervyn.com;
     }
     ```
-- `upstream` 的指令用于设置一系列的后端服务器，设置反向代理及后端服务器的负载均衡  
+- `upstream` 的指令用于设置一系列的后端服务器，设置反向代理及后端服务器的负载均衡
     ```
     upstream web{
         # 负载均衡，weight为权重，权重越高被分配到的几率越高
@@ -176,8 +176,8 @@ keepalived
 
 
 ## 参考资料
-[Linux下nginx的安装以及环境配置 - 凉凉的西瓜](https://blog.csdn.net/qq_42815754/article/details/82980326)  
-[nginx.conf 配置文件详解 - 掘金](https://juejin.im/post/5c1616186fb9a049a42ef21d)  
-[反向代理为何叫反向代理 - 知乎](https://www.zhihu.com/question/24723688)  
-[Nginx负载与动静分离实战 - 腾讯课堂](https://ke.qq.com/course/482713?taid=4269592629697945)  
+[Linux下nginx的安装以及环境配置 - 凉凉的西瓜](https://blog.csdn.net/qq_42815754/article/details/82980326)
+[nginx.conf 配置文件详解 - 掘金](https://juejin.im/post/5c1616186fb9a049a42ef21d)
+[反向代理为何叫反向代理 - 知乎](https://www.zhihu.com/question/24723688)
+[Nginx负载与动静分离实战 - 腾讯课堂](https://ke.qq.com/course/482713?taid=4269592629697945)
 [【Nginx】教学视频【雷哥】 - 腾讯课堂](https://ke.qq.com/course/469240?taid=4862306706467064)
