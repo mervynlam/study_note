@@ -34,21 +34,21 @@
 
    1. 添加域名
 
-      ![image-20200216133736936](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200216133736936.png)
+      ![image-20200216133736936](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202645.png)
 
    2. 解析设置
 
-      ![image-20200215221218281](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200215221218281.png)
+      ![image-20200215221218281](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202849.png)
 
    3. 添加解析记录
 
-      ![image-20200216133854773](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200216133854773.png)
+      ![image-20200216133854773](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202853.png)
 
    4. 到域名DNS添加CNAME解析（DNSPOD）
 
-      ![image-20200216133822956](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200216133822956.png)
+      ![image-20200216133822956](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202900.png)
 
-      ![image-20200216133928324](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200216133928324.png)
+      ![image-20200216133928324](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202700.png)
 
 ## 实现V2ray + cdn
 
@@ -60,15 +60,15 @@
 
    记录地址、账号、密码
 
-   ![image-20200216123942955](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200216123942955.png)
+   ![image-20200216123942955](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202704.png)
 
 2. 登录宝塔面板，安装nginx
 
-   ![image-20200216124008881](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200216124008881.png)
+   ![image-20200216124008881](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202812.png)
 
 3. 添加域名
 
-   ![image-20200216124856617](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200216124856617.png)
+   ![image-20200216124856617](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202805.png)
 
 4. 安装v2ray
 
@@ -79,7 +79,7 @@
 
    记录端口和UUID
 
-   ![image-20200216124933876](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200216124933876.png)
+   ![image-20200216124933876](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202800.png)
 
    后续可以使用以下命令查看
 
@@ -89,7 +89,7 @@
 
 5. 配置SSL
 
-   ![image-20200216125440753](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200216125440753.png)
+   ![image-20200216125440753](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202754.png)
 
    若卡在“正在申请证书....”
 
@@ -97,7 +97,7 @@
 
 6. 修改配置文件
 
-   ![image-20200216125624696](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200216125624696.png)
+   ![image-20200216125624696](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202749.png)
 
    ```bash
        location /v2ray
@@ -219,6 +219,6 @@
 
 11. 配置客户端
 
-     ![image-20200215224212061](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200215224212061.png)
+     ![image-20200215224212061](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202742.png)
 
-     ![image-20200216133517631](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20200216133517631.png)
+     ![image-20200216133517631](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821202734.png)

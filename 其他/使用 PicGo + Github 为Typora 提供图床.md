@@ -1,3 +1,5 @@
+[TOC]
+
 # 使用 PicGo + Github 为Typora 提供图床
 
 Typora 是一款非常好用的跨平台“所见即所得”的 Markdown 编辑器。一直使用 Typora 编写 Markdown 文本：博客、笔记之类的。
