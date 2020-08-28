@@ -376,7 +376,7 @@ yaml 格式提供配置清单，apiserver可自动将其转换为json格式，�
         `key: value` 运行在拥有`key=value`标签的节点上
     - `nodeName` 指定节点
     - `selector` 适用于`kind=deployment`的资源，把所有正在运行的，拥有给定标签的pod识别为被管理的对象。
-        
+      
         - `matchLabels` 直接给定键值
         - `matchExpressions` 基于表达式定义选择器。
             `{key:"KEY", operator:"OPERATOR", values:[val1, val2, ...]}`
@@ -454,9 +454,67 @@ spec:
           command: ["/usr/sbin/nginx","-s","quit"]
 ```
 
+## Pod 控制器
 
+### ReplicaSet
+
+`ReplicaSet`确保`Pod`资源一直符合用户期望的`replicas`数量的状态。
+
+核心资源：
+
+1. 用户期望副本数，确保所控制的资源满足用户期望。
+2. 标签选择器，控制指定的资源。
+3. Pod 资源模板，当资源不满足时，根据资源模板完成创建。
+
+> A ReplicaSet ensures that a specified number of pod replicas are running at any given time. However, a Deployment is a higher-level concept that manages ReplicaSets and provides declarative updates to Pods along with a lot of other useful features. Therefore, we recommend using Deployments instead of directly using ReplicaSets, unless you require custom update orchestration or don't require updates at all.
+>
+> ReplicaSet可确保指定数量的pod“replicas”在任何设定的时间运行。然而，Deployments是一个更高层次的概念，它管理ReplicaSets，并提供对pod的声明性更新以及许多其他的功能。因此，我们建议您使用Deployments而不是直接使用ReplicaSets，除非您需要自定义更新编排或根本不需要更新。
+
+### Deployment
+
+`Deployment`建构在`ReplicaSet`上，不直接控制`Pod`，而是通过控制`ReplicaSet`来控制`Pod`。只用于管控无状态应用。
+
+作用：
+
+1. 创建部署`Pod`和`ReplicaSet`
+2. 扩容、缩容
+3. 滚动更新、回滚应用
+4. 暂停和继续`Deployment`
+
+### DaemonSet
+
+用于确保集群中每一个节点运行且只运行一个特定的Pod副本。常用来部署一些集群的日志、监控或者其他系统管理应用。
+
+当节点新加入集群时，会自动添加这些Pod到这些节点。
+
+当节点从集群中删除时，这些Pod会被删除。
+
+常用于：
+
+1. 日志收集
+2. 系统监控
+3. 系统程序
+
+### Job
+
+`Job`负责处理一次性任务。
+
+`Pod`任务完成后退出，不需要作为守护进程运行。
+
+重启策略为：仅当任务未完成的异常退出时重启。
+
+### CronJob
+
+`CronJob`周期性运行任务，即定时任务，重复创建`Job`来执行任务。
+
+### StatefulSet
+
+管理有状态应用（对应Deployments和ReplicaSets是为无状态应用而设计），并且每个副本被单独管理。
+
+常用于持久化存储
 
 # 参考资料
+
 [kubeadm故障排查](https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/troubleshooting-kubeadm/)
 
 [Kubernetes Pod 生命周期 - 简书](https://www.jianshu.com/p/91625e7a8259?utm_source=oschina-app)
