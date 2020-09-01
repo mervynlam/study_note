@@ -298,7 +298,22 @@ kubectl是api server的客户端程序
             - `key notin(value1, value2, ...)` 选择所有key!=value1且key!=value2且...的资源
             - `key` 选择所有有key标签的资源
             - `!key` 选择所有没有key标签的资源
-    - `kubectl get pods -L key` 显示所有key标签的值
+
+- 显示所有key标签的值
+
+    `kubectl get pods -L key`
+
+- 通过文件对资源应用配置
+
+    `kubectl apply -f demo.yaml`
+
+    首次执行为创建
+
+    多次执行为更新
+
+- 更新资源字段、打补丁
+
+    `kubectl patch deployment deploy-demo -p '{"spec":{"replicas":5}}' `
 
 ![img](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821103335.png)
 
@@ -460,7 +475,7 @@ spec:
 
 `ReplicaSet`确保`Pod`资源一直符合用户期望的`replicas`数量的状态。
 
-核心资源：
+#### 核心资源
 
 1. 用户期望副本数，确保所控制的资源满足用户期望。
 2. 标签选择器，控制指定的资源。
@@ -470,16 +485,136 @@ spec:
 >
 > ReplicaSet可确保指定数量的pod“replicas”在任何设定的时间运行。然而，Deployments是一个更高层次的概念，它管理ReplicaSets，并提供对pod的声明性更新以及许多其他的功能。因此，我们建议您使用Deployments而不是直接使用ReplicaSets，除非您需要自定义更新编排或根本不需要更新。
 
+#### 配置清单
+
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+    name: rs-demo
+    namespace: default
+spec:
+    replicas: 2 # 副本数
+    selector: # 托管pod的label选择器
+        matchLabels:
+            app: rs-demo-pod
+            release: stable
+    template: # 模板，控制器会根据模板创建pods
+        metadata:
+            name: rs-demo-pod # 无用字段，pod会以replicaSet的名称+'_随机码'命名
+            labels: # 需与replicaSet的selector相符
+                app: rs-demo-pod
+                release: stable
+                enviroment: qa
+        spec:
+            containers:
+            - name: rs-demo-container
+              image: nginx
+              imagePullPolicy: IfNotPresent
+              ports:
+              - name: http
+                containerPort: 80
+```
+
+#### 扩容缩容
+
+```bash
+# 使用edit命令
+kubectl edit rs rs-demo
+# 修改replicas的值即可
+
+# 使用scale命令
+kubectl scale --replicas=2 rs rs-demo
+```
+
+#### 更新镜像版本
+
+```bash
+kubectl edit rs rs-demo
+# 修改了模板，但已有pod镜像并不会更新，因为副本数目正确，pod不会重建。后续重建的pod才会使用更新的镜像。
+```
+
+![image-20200901160500700](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200901161504.png)
+
 ### Deployment
 
 `Deployment`建构在`ReplicaSet`上，不直接控制`Pod`，而是通过控制`ReplicaSet`来控制`Pod`。只用于管控无状态应用。
 
-作用：
+#### 作用
 
 1. 创建部署`Pod`和`ReplicaSet`
 2. 扩容、缩容
 3. 滚动更新、回滚应用
 4. 暂停和继续`Deployment`
+
+#### `Deployments` - `ReplicaSets` - `Pods` 结构
+
+![image-20200901164018864](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200901164019.png)
+
+创建`Deployment`后，查询`ReplicaSet`发现自动创建了`ReplicaSet`
+
+```bash
+[root@master ~]# kubectl get deploy
+NAME          READY   UP-TO-DATE   AVAILABLE   AGE
+deploy-demo   2/2     2            2           4m12s
+[root@master ~]# kubectl get rs
+NAME                     DESIRED   CURRENT   READY   AGE
+deploy-demo-7b5b46db88   2         2         2       4m16s
+# rs的后缀随机码为模板的hash值，以便追踪到关联到的模板创建pods
+[root@master ~]# kubectl get pods
+NAME                           READY   STATUS    RESTARTS   AGE
+deploy-demo-7b5b46db88-hnflh   1/1     Running   0          4m20s
+deploy-demo-7b5b46db88-mc6z4   1/1     Running   0          4m20s
+```
+
+#### 配置清单
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: deploy-demo
+    namespace: default
+spec:
+    replicas: 2
+    selector:
+        matchLabels:
+            app: deploy-demo-pod
+            release: stable
+    strategy: # 更新策略
+        type: RollingUpdate # 更新方式
+        rollingUpdate: # 滚动更新策略
+            maxSurge: 1 # 在滚动中，可以创建多少个新pod
+            maxUnavailable: 0 # 在滚动中，可以删除多少个旧pod
+    revisionHistoryLimit:
+    template:
+        metadata:
+            labels:
+                app: deploy-demo-pod
+                release: stable
+        spec:
+            containers:
+            - name: deploy-demo-container
+              image: nginx
+              imagePullPolicy: IfNotPresent
+              ports:
+              - name: http
+                containerPort: 80
+```
+
+#### 滚动更新
+
+```bash
+kubectl edit deployment deploy-demo
+kubectl set image deployment deploy-demo deploy-demo-container=nginx
+```
+
+```bash
+# 查看更新历史
+kubectl rollout history deployment deploy-demo
+# 回滚至指定版本(不指定则默认上一版本)
+kubectl rollout undo deployment deploy-demo --to-revision=1
+```
 
 ### DaemonSet
 
@@ -511,7 +646,7 @@ spec:
 
 管理有状态应用（对应Deployments和ReplicaSets是为无状态应用而设计），并且每个副本被单独管理。
 
-常用于持久化存储
+常用于持久化存储。
 
 # 参考资料
 
