@@ -59,6 +59,7 @@
     - master和node中的组件运行为pod（static pod）
     - flannel运行为pod，托管在k8s集群中 
 ### 使用 kubeadm 部署 Kubernetes
+
 kubeadm是官方社区推出的一个用于快速部署kubernetes集群的工具。
 
 这个工具能通过两条指令完成一个kubernetes集群的部署：
@@ -475,7 +476,7 @@ spec:
 
 `ReplicaSet`确保`Pod`资源一直符合用户期望的`replicas`数量的状态。
 
-#### 核心资源
+**核心资源**
 
 1. 用户期望副本数，确保所控制的资源满足用户期望。
 2. 标签选择器，控制指定的资源。
@@ -485,7 +486,7 @@ spec:
 >
 > ReplicaSet可确保指定数量的pod“replicas”在任何设定的时间运行。然而，Deployments是一个更高层次的概念，它管理ReplicaSets，并提供对pod的声明性更新以及许多其他的功能。因此，我们建议您使用Deployments而不是直接使用ReplicaSets，除非您需要自定义更新编排或根本不需要更新。
 
-#### 配置清单
+**配置清单**
 
 ```yaml
 apiVersion: apps/v1
@@ -516,7 +517,7 @@ spec:
                 containerPort: 80
 ```
 
-#### 扩容缩容
+**扩容缩容**
 
 ```bash
 # 使用edit命令
@@ -527,7 +528,7 @@ kubectl edit rs rs-demo
 kubectl scale --replicas=2 rs rs-demo
 ```
 
-#### 更新镜像版本
+**更新镜像版本**
 
 ```bash
 kubectl edit rs rs-demo
@@ -540,14 +541,14 @@ kubectl edit rs rs-demo
 
 `Deployment`建构在`ReplicaSet`上，不直接控制`Pod`，而是通过控制`ReplicaSet`来控制`Pod`。只用于管控无状态应用。
 
-#### 作用
+**作用**
 
 1. 创建部署`Pod`和`ReplicaSet`
 2. 扩容、缩容
 3. 滚动更新、回滚应用
 4. 暂停和继续`Deployment`
 
-#### `Deployments` - `ReplicaSets` - `Pods` 结构
+**`Deployments` - `ReplicaSets` - `Pods` 结构**
 
 ![image-20200901164018864](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200901164019.png)
 
@@ -567,42 +568,44 @@ deploy-demo-7b5b46db88-hnflh   1/1     Running   0          4m20s
 deploy-demo-7b5b46db88-mc6z4   1/1     Running   0          4m20s
 ```
 
-#### 配置清单
+**配置清单**
 
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: deploy-demo
+    name: myapp-deploy
     namespace: default
 spec:
-    replicas: 2
+    replicas: 3
     selector:
         matchLabels:
-            app: deploy-demo-pod
+            app: myapp
             release: stable
     strategy: # 更新策略
         type: RollingUpdate # 更新方式
         rollingUpdate: # 滚动更新策略
             maxSurge: 1 # 在滚动中，可以创建多少个新pod
             maxUnavailable: 0 # 在滚动中，可以删除多少个旧pod
-    revisionHistoryLimit:
     template:
         metadata:
+            name: myapp-deploy-pod
+            namespace: default
             labels:
-                app: deploy-demo-pod
+                app: myapp
                 release: stable
         spec:
             containers:
-            - name: deploy-demo-container
-              image: nginx
+            - name: myapp-deploy-container
+              image: ikubernetes/myapp:v1
               imagePullPolicy: IfNotPresent
               ports:
               - name: http
                 containerPort: 80
+
 ```
 
-#### 滚动更新
+**滚动更新**
 
 ```bash
 kubectl edit deployment deploy-demo
@@ -648,8 +651,64 @@ kubectl rollout undo deployment deploy-demo --to-revision=1
 
 常用于持久化存储。
 
+## Service
+
+`Service`为`Pod`提供固定访问端点。避免`Pod`重启后`ip`改变无法访问。
+
+`Service`通过`selector`关联到对应的`Pods`
+
+**代理模式**
+
+- `iptables`
+
+  灵活、功能强大
+
+  规则遍历匹配和更新
+
+  可扩展性
+
+- `IPVS`
+
+  工作在内核态，有更好的性能
+
+  调度算法丰富
+
+**DNS资源记录**
+
+`DNS`服务监视`Kubernetes API`，为每个`Service`创建`DNS`记录用于域名解析。
+
+可通过`DNS`名称访问`Pods`
+
+`SVC_NAME.NAMESPACE_NAME.svc.cluster.local`
+
+**类型**
+
+- `ClusterIP`集群内部通讯
+- `NodePort`对外暴露
+- `LoadBalancer`对外暴露和负载均衡，仅限部分云平台
+
+**配置清单**
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+    name: myapp 
+    namespace: default
+spec:
+    selector:
+        app: myapp
+        release: stable
+    type: NodePort
+    ports: 
+    - port: 80
+      targetPort: 80
+```
+
 # 参考资料
 
 [kubeadm故障排查](https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/troubleshooting-kubeadm/)
 
 [Kubernetes Pod 生命周期 - 简书](https://www.jianshu.com/p/91625e7a8259?utm_source=oschina-app)
+
+[安装Kubernetes单Master节点](https://www.kuboard.cn/install/install-k8s.htm)
