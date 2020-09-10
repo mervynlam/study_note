@@ -659,6 +659,12 @@ kubectl rollout undo deployment deploy-demo --to-revision=1
 
 **代理模式**
 
+- `userspace`
+
+  效率低
+
+  ![image-20200909165554593](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200909165554.png)
+
 - `iptables`
 
   灵活、功能强大
@@ -667,11 +673,15 @@ kubectl rollout undo deployment deploy-demo --to-revision=1
 
   可扩展性
 
+  ![image-20200909165818388](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200909165818.png)
+
 - `IPVS`
 
   工作在内核态，有更好的性能
 
   调度算法丰富
+  
+  ![image-20200909165235117](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200909165241.png)
 
 **DNS资源记录**
 
