@@ -86,13 +86,7 @@ $ kubeadm join <Master节点的IP和端口 >
     ```bash
     hostname master
     hostnamectl set-hostname master
-    ```
-    ```bash
-    vim /etc/hosts
-    192.168.xx.xx master
-    192.168.xx.xx node01
-    192.168.xx.xx node02
-    #等等
+    echo "127.0.0.1   $(hostname)" >> /etc/hosts
     ```
 - 各节点iptables及firewalld服务器被disabled
     ```bash
@@ -118,8 +112,10 @@ $ kubeadm join <Master节点的IP和端口 >
         cd /etc/yum.repos.d/
         wget https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
         ```
+        
     2. 生存Kubernetes仓库文件
         `vim kubernetes.repo`
+        
         ```
         [kubernetes]
         name=Kubernetes Repo
@@ -129,8 +125,14 @@ $ kubeadm join <Master节点的IP和端口 >
         repo_gpgcheck=1
         gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
         ```
+        
     3. 安装  （指定版本）
-        `yum install -y docker-ce-18.06.1.ce-3.el7 kubelet-1.17.2 kubeadm-1.17.2 kubectl-1.17.2` node节点可不安装kubectl
+        
+        ```bash
+        yum install -y docker-ce-19.03.8 kubelet-1.18.8 kubeadm-1.18.8 kubectl-1.18.8
+        ```
+        
+        node节点可不安装kubectl
 2. 初始化主节点
     1. 设置ip6tables和iptables值为1
         ```bash
@@ -156,7 +158,7 @@ $ kubeadm join <Master节点的IP和端口 >
         ```bash
         kubeadm init \
         --image-repository registry.cn-hangzhou.aliyuncs.com/google_containers \
-        --kubernetes-version=v1.17.2 \
+        --kubernetes-version=v1.18.8 \
         --service-cidr=10.1.0.0/16 \
         --pod-network-cidr=10.244.0.0/16
         ```
