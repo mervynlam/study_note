@@ -47,12 +47,6 @@ function resizeTerminal() {
 };
 ```
 
-```javascript
-WSSHClient.prototype.send = function (data) {
-    this._connection.send(JSON.stringify(data));
-};
-```
-
 **后台**
 
 ```java
@@ -64,8 +58,47 @@ private int height = 480;
 ```
 
 ```java
-//实现类添加调整channel行列宽高的代码
-channel.setPtySize(webSSHData.getCols(),webSSHData.getRows(),webSSHData.getWidth(),webSSHData.getHeight());
+//处理客户端发送的请求
+@Override
+public void recvHandle(String buffer, WebSocketSession session) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    WebSSHData webSSHData = null;
+    try {
+        webSSHData = objectMapper.readValue(buffer, WebSSHData.class);
+    } catch (IOException e) {
+        logger.error("Json转换异常");
+        logger.error("异常信息:{}", e.getMessage());
+        return;
+    }
+    String userId = String.valueOf(session.getAttributes().get(ConstantPool.USER_UUID_KEY));
+    if (ConstantPool.WEBSSH_OPERATE_COMMAND.equals(webSSHData.getOperate())) {
+        String command = webSSHData.getCommand();
+        SSHConnectInfo sshConnectInfo = (SSHConnectInfo) sshMap.get(userId);
+        if (sshConnectInfo != null) {
+            try {
+                //调整行列宽高
+                ChannelShell channel = (ChannelShell) sshConnectInfo.getChannel();
+                channel.setPtySize(webSSHData.getCols(),webSSHData.getRows(),webSSHData.getWidth(),webSSHData.getHeight());
+                transToSSH(sshConnectInfo.getChannel(), command);
+            } catch (IOException e) {
+                logger.error("webssh连接异常");
+                logger.error("异常信息:{}", e.getMessage());
+                try {
+                    //发送错误信息
+                    sendMessage(session, ("ERROR : "+e.getMessage()).getBytes());
+                } catch (IOException ex) {
+                    logger.error("消息发送失败");
+                    logger.error("异常信息:{}", ex.getMessage());
+                }
+                //关闭连接
+                close(session);
+            }
+        }
+    } else {
+        logger.error("不支持的操作");
+        close(session);
+    }
+}
 ```
 
 前后端都需要调整，否则会出现输入很长的命令会把前面的文字覆盖的问题。
@@ -164,9 +197,36 @@ var heartCheck = {
 服务端
 
 ```java
-//处于连接状态则发送健康数据，不能为空，空则断开连接。
-if (channel.isConnected())
-    sendMessage(session, "Heartbeat healthy".getBytes());
+//处理客户端发送的请求
+public void recvHandle(String buffer, WebSocketSession session) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    WebSSHData webSSHData = null;
+    try {
+        webSSHData = objectMapper.readValue(buffer, WebSSHData.class);
+    } catch (IOException e) {
+        logger.error("Json转换异常");
+        logger.error("异常信息:{}", e.getMessage());
+        return;
+    }
+    String userId = String.valueOf(session.getAttributes().get(ConstantPool.USER_UUID_KEY));
+    if (ConstantPool.WEBSSH_OPERATE_HEARTBEAT.equals(webSSHData.getOperate())) {
+        //检查心跳
+        SSHConnectInfo sshConnectInfo = (SSHConnectInfo) sshMap.get(userId);
+        if (sshConnectInfo != null) {
+            try {
+                //处于连接状态则发送健康数据，不能为空，空则断开连接。
+                if (sshConnectInfo.getChannel().isConnected())
+                    sendMessage(session, "Heartbeat healthy".getBytes());
+            } catch (IOException e) {
+                logger.error("消息发送失败");
+                logger.error("异常信息:{}", e.getMessage());
+            }
+        }
+    } else {
+        logger.error("不支持的操作");
+        close(session);
+    }
+}
 ```
 
 ### 断开后自动重连
