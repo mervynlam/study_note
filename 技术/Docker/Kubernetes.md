@@ -1,8 +1,10 @@
 [TOC]
-# Kubernetes
+
+
 <!--开始学习时间2020-->
 
-## 特性
+# 特性
+
 - 自动装箱：基于容器对应用环境的资源配置要求自动部署应用容器
 - 自动修复：
     - 容器失败时自动重启
@@ -18,7 +20,8 @@
     - 自动实现存储系统挂载及应用
     - 存储卷动态供给
 
-## 组件
+# 组件
+
 - master
     - apiserver：负责接收并处理请求。各组件协调者，以RESTful API提供接口服务，所有对象资源的增删改查和监听操作都交给APIServer处理后再提交给Etcd存储
     - scheduler：调度容器创建的请求
@@ -30,6 +33,7 @@
     - docker：容器引擎，用于创建、运行容器
 
 ---
+
 - Pod
     最小逻辑单元
     包含多个容器
@@ -50,15 +54,18 @@
     通过标签选择器关联Pod
     对外暴露应用、提供访问入口
 
-## 部署
-### 部署方式
+# 部署
+
+## 部署方式
+
 - 传统方式部署k8s自身，k8s自己的相关组件统统运行为系统级的守护进程，包括master和node上的组件。缺点：每一步都需要手动解决，包括做证书等……过程繁琐且复杂；系统级的守护进程某个组件挂了需要手动启动。
 - kubeadm
     - 把k8s自己部署为pod
     - master和node只需有手动安装kubelet和docker
     - master和node中的组件运行为pod（static pod）
     - flannel运行为pod，托管在k8s集群中 
-### 使用 kubeadm 部署 Kubernetes
+
+## 使用 kubeadm 部署 Kubernetes
 
 kubeadm是官方社区推出的一个用于快速部署kubernetes集群的工具。
 
@@ -72,7 +79,8 @@ $ kubeadm init
 $ kubeadm join <Master节点的IP和端口 >
 ```
 
-#### 学习目标
+### 学习目标
+
 1. 在所有节点上安装Docker和kubeadm
 2. 部署Kubernetes Master
 3. 部署容器网络插件
@@ -80,7 +88,8 @@ $ kubeadm join <Master节点的IP和端口 >
 5. 部署Dashboard Web页面，可视化查看Kubernetes资源
 
 
-#### 前提
+### 前提
+
 - 各节点时间同步
 - 各节点主机名称解析
     ```bash
@@ -105,7 +114,8 @@ $ kubeadm join <Master节点的IP和端口 >
     #注释掉swap行
     ```
 
-#### 步骤
+### 步骤
+
 1. 设置各节点安装程序包
     1. 下载docker仓库文件
         ```bash
@@ -127,7 +137,7 @@ $ kubeadm join <Master节点的IP和端口 >
         ```
         
     3. 安装  （指定版本）
-        
+       
         ```bash
         yum install -y docker-ce-19.03.8 kubelet-1.18.8 kubeadm-1.18.8 kubectl-1.18.8
         ```
@@ -203,7 +213,8 @@ $ kubeadm join <Master节点的IP和端口 >
     3. 回到master节点验证
         `kubectl get nodes`
 
-## Kubernetes 中的资源
+# Kubernetes 中的资源
+
 - 工作负载型资源 :
     - Pod
         - pod的ip只能在集群内部访问
@@ -238,7 +249,8 @@ $ kubeadm join <Master节点的IP和端口 >
     - LimitRange
     - ...
 
-## kubectl命令
+# kubectl命令
+
 kubectl是api server的客户端程序
 - 查看节点详细信息
     `kubectl describe node k8s-node1`
@@ -320,11 +332,13 @@ kubectl是api server的客户端程序
 
 ![img](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821103335.png)
 
-## 创建资源的方法
+# 创建资源的方法
+
 apiserver 仅接收JSON格式的资源定义。
 yaml 格式提供配置清单，apiserver可自动将其转换为json格式，然后再执行
 
-## yaml配置清单
+# yaml配置清单
+
 使用`kubectl explain TYPE`命令获取各类型资源的字段
 - `apiVersion` api版本
     `group/version`
@@ -407,7 +421,7 @@ yaml 格式提供配置清单，apiserver可自动将其转换为json格式，�
         - `Never` 从不重启
 - `status` 当前状态，无限向期望状态靠近，由kubernetes集群维护，用户不能定义
 
-## Pod生命周期
+# Pod生命周期
 
 ![image-20200827092313725](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200827092315.png)
 
@@ -417,14 +431,16 @@ yaml 格式提供配置清单，apiserver可自动将其转换为json格式，�
 2. 生命周期回调
 3. 容器探测
 
-### 状态
+## 状态
+
 - `Pending`, Pod 已被 Kubernetes 接受，但尚未创建一个或多个容器镜像。这包括被调度之前的时间以及通过网络下载镜像所花费的时间，执行需要一段时间。
 - `Running`, Pod 已经被绑定到了一个节点，所有容器已被创建。至少一个容器正在运行，或者正在启动或重新启动。
 - `Failed`, 所有容器终止，至少有一个容器以失败方式终止。也就是说，这个容器要么已非 0 状态退出，要么被系统终止。
 - `Succeeded`, 所有容器成功终止，也不会重启。
 - `Unkown`, 由于一些原因，Pod 的状态无法获取，通常是与 Pod 通信时出错导致的
 
-### 容器探测
+## 容器探测
+
 - `livenessProbe`：指示容器是否正在运行，如果活动探测失败，则 kubelet 会杀死容器，并且容器将受其重启策略的约束。如果不指定活动探测，默认状态是 Success。
 
   ```yaml
@@ -447,12 +463,14 @@ yaml 格式提供配置清单，apiserver可自动将其转换为json格式，�
   ```
 
 - `readinessProbe`：指示容器是否已准备好为请求提供服务，如果准备情况探测失败，则控制器会从与 Pod 匹配的所有服务的端点中删除 Pod 的 IP 地址。初始化延迟之前的默认准备状态是 Failure，如果容器未提供准备情况探测，则默认状态为 Success。
-#### 探针类型
+
+### 探针类型
+
 - `ExecAction`：在容器内部执行指定的命令，如果命令以状态代码 0 退出，则认为诊断成功。
 - `TCPSocketAction`：对指定 IP 和端口的容器执行 TCP 检查，如果端口打开，则认为诊断成功。
 - `HTTPGetAction`：对指定 IP + port + path路径上的容器的执行 HTTP Get 请求。如果响应的状态代码大于或等于 200 且小于 400，则认为诊断成功。
 
-### 生命周期回调
+## 生命周期回调
 
 ```yaml
 apiVersion: v1
@@ -472,9 +490,9 @@ spec:
           command: ["/usr/sbin/nginx","-s","quit"]
 ```
 
-## Pod 控制器
+# Pod 控制器
 
-### ReplicaSet
+## ReplicaSet
 
 `ReplicaSet`确保`Pod`资源一直符合用户期望的`replicas`数量的状态。
 
@@ -539,7 +557,7 @@ kubectl edit rs rs-demo
 
 ![image-20200901160500700](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200901161504.png)
 
-### Deployment
+## Deployment
 
 `Deployment`建构在`ReplicaSet`上，不直接控制`Pod`，而是通过控制`ReplicaSet`来控制`Pod`。只用于管控无状态应用。
 
@@ -621,7 +639,7 @@ kubectl rollout history deployment deploy-demo
 kubectl rollout undo deployment deploy-demo --to-revision=1
 ```
 
-### DaemonSet
+## DaemonSet
 
 用于确保集群中每一个节点运行且只运行一个特定的Pod副本。常用来部署一些集群的日志、监控或者其他系统管理应用。
 
@@ -635,7 +653,7 @@ kubectl rollout undo deployment deploy-demo --to-revision=1
 2. 系统监控
 3. 系统程序
 
-### Job
+## Job
 
 `Job`负责处理一次性任务。
 
@@ -643,17 +661,17 @@ kubectl rollout undo deployment deploy-demo --to-revision=1
 
 重启策略为：仅当任务未完成的异常退出时重启。
 
-### CronJob
+## CronJob
 
 `CronJob`周期性运行任务，即定时任务，重复创建`Job`来执行任务。
 
-### StatefulSet
+## StatefulSet
 
 管理有状态应用（对应Deployments和ReplicaSets是为无状态应用而设计），并且每个副本被单独管理。
 
 常用于持久化存储。
 
-## Service
+# Service
 
 `Service`为`Pod`提供固定访问端点。避免`Pod`重启后`ip`改变无法访问。
 
