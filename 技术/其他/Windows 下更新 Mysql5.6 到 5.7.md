@@ -143,6 +143,31 @@
     # 漫长的等待开始了
     ```
 
+---
+
+升级后导出数据库报错
+
+```
+1577 - Cannot proceed because system tables used by Event Scheduler were found damaged at server start
+```
+
+解决：
+
+```bash
+mysqlcheck -uroot -p123456 --all-databases --check-upgrade --auto-repair
+#123456为数据库密码
+mysql_upgrade -uroot -p123456
+```
+
+后重启mysql服务
+
+```bash
+net stop mysql
+net start mysql
+```
+
 # 参考资料
 
 [【MySQL】Windows下mysql5.6升级到5.7的方法](https://blog.csdn.net/cloverat/article/details/106264217)
+
+[解决导出数据库报错](https://www.jianshu.com/p/f044e12a2f9f)

@@ -1,6 +1,5 @@
 [TOC]
 
-
 <!--开始学习时间2020-->
 
 # 特性
@@ -31,28 +30,6 @@
     - kubelet：用于与master通信，接收master调度过来的任务并执行。管理本机容器的生命周期。将每个pod转换成一组容器。
     - kube-proxy：在Node节点上实现Pod网络代理。
     - docker：容器引擎，用于创建、运行容器
-
----
-
-- Pod
-    最小逻辑单元
-    包含多个容器
-    一个Pod内的容器共享网络名称空间
-    一个Pod内的容器共享存储卷
-- Label Selector
-    根据标签过滤符合条件的资源
-- Label：k-v数据
-- Controller
-    - ReplicationController
-    - ReplicaSet
-    - Deployment
-    - StatefulSet
-    - DaemonSet
-    - Job
-    - CtonJob
-- Service
-    通过标签选择器关联Pod
-    对外暴露应用、提供访问入口
 
 # 部署
 
@@ -217,10 +194,6 @@ $ kubeadm join <Master节点的IP和端口 >
 
 - 工作负载型资源 :
     - Pod
-        - pod的ip只能在集群内部访问
-        - 创建pod时如果指定了`--replicas`，使用`kubectl delete pods`命令删除时，会自动重建一个新的pod。
-        新创建的pod可能会创建在另一个节点上，导致ip不同从而无法通过原ip访问。所以需要发布成service，为pod提供一个固定访问的端点。
-        - pod客户端默认指向coredns
     - ReplicaSet
     - Deployment
     - StatefulSet
@@ -332,18 +305,22 @@ kubectl是api server的客户端程序
 
 ![img](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821103335.png)
 
-# 创建资源的方法
+# yaml配置清单
+
+**创建资源的方法**
 
 apiserver 仅接收JSON格式的资源定义。
-yaml 格式提供配置清单，apiserver可自动将其转换为json格式，然后再执行
+yaml 格式提供配置清单，apiserver可自动将其转换为json格式，然后再执行。
 
-# yaml配置清单
+**配置清单字段**
 
 使用`kubectl explain TYPE`命令获取各类型资源的字段
 - `apiVersion` api版本
     `group/version`
     `kubectl api-versions`可获取
+    
 - `kind` 资源类别
+
 - `metadata` 元数据
     - `name` 同一类别中name唯一
 
@@ -356,6 +333,7 @@ yaml 格式提供配置清单，apiserver可自动将其转换为json格式，�
     - `annotations`注解
 
         与`label`不同的地方在于，它不能用于挑选资源对象，仅用于为对象提供“元数据”。
+    
 - `spec` 期望目标状态， **不同资源类型的spec字段内容不尽相同**
     - `container` 容器
 
@@ -419,9 +397,12 @@ yaml 格式提供配置清单，apiserver可自动将其转换为json格式，�
         - `Always` 总是重启
         - `OnFailure` 出错时重启
         - `Never` 从不重启
+    
 - `status` 当前状态，无限向期望状态靠近，由kubernetes集群维护，用户不能定义
 
-# Pod生命周期
+# Pod
+
+## Pod生命周期
 
 ![image-20200827092313725](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200827092315.png)
 
@@ -431,7 +412,7 @@ yaml 格式提供配置清单，apiserver可自动将其转换为json格式，�
 2. 生命周期回调
 3. 容器探测
 
-## 状态
+### 状态
 
 - `Pending`, Pod 已被 Kubernetes 接受，但尚未创建一个或多个容器镜像。这包括被调度之前的时间以及通过网络下载镜像所花费的时间，执行需要一段时间。
 - `Running`, Pod 已经被绑定到了一个节点，所有容器已被创建。至少一个容器正在运行，或者正在启动或重新启动。
@@ -439,7 +420,7 @@ yaml 格式提供配置清单，apiserver可自动将其转换为json格式，�
 - `Succeeded`, 所有容器成功终止，也不会重启。
 - `Unkown`, 由于一些原因，Pod 的状态无法获取，通常是与 Pod 通信时出错导致的
 
-## 容器探测
+### 容器探测
 
 - `livenessProbe`：指示容器是否正在运行，如果活动探测失败，则 kubelet 会杀死容器，并且容器将受其重启策略的约束。如果不指定活动探测，默认状态是 Success。
 
@@ -464,13 +445,13 @@ yaml 格式提供配置清单，apiserver可自动将其转换为json格式，�
 
 - `readinessProbe`：指示容器是否已准备好为请求提供服务，如果准备情况探测失败，则控制器会从与 Pod 匹配的所有服务的端点中删除 Pod 的 IP 地址。初始化延迟之前的默认准备状态是 Failure，如果容器未提供准备情况探测，则默认状态为 Success。
 
-### 探针类型
+#### 探针类型
 
 - `ExecAction`：在容器内部执行指定的命令，如果命令以状态代码 0 退出，则认为诊断成功。
 - `TCPSocketAction`：对指定 IP 和端口的容器执行 TCP 检查，如果端口打开，则认为诊断成功。
 - `HTTPGetAction`：对指定 IP + port + path路径上的容器的执行 HTTP Get 请求。如果响应的状态代码大于或等于 200 且小于 400，则认为诊断成功。
 
-## 生命周期回调
+### 生命周期回调
 
 ```yaml
 apiVersion: v1
@@ -490,9 +471,9 @@ spec:
           command: ["/usr/sbin/nginx","-s","quit"]
 ```
 
-# Pod 控制器
+## Pod 控制器
 
-## ReplicaSet
+### ReplicaSet
 
 `ReplicaSet`确保`Pod`资源一直符合用户期望的`replicas`数量的状态。
 
@@ -557,7 +538,7 @@ kubectl edit rs rs-demo
 
 ![image-20200901160500700](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200901161504.png)
 
-## Deployment
+### Deployment
 
 `Deployment`建构在`ReplicaSet`上，不直接控制`Pod`，而是通过控制`ReplicaSet`来控制`Pod`。只用于管控无状态应用。
 
@@ -639,7 +620,7 @@ kubectl rollout history deployment deploy-demo
 kubectl rollout undo deployment deploy-demo --to-revision=1
 ```
 
-## DaemonSet
+### DaemonSet
 
 用于确保集群中每一个节点运行且只运行一个特定的Pod副本。常用来部署一些集群的日志、监控或者其他系统管理应用。
 
@@ -653,7 +634,7 @@ kubectl rollout undo deployment deploy-demo --to-revision=1
 2. 系统监控
 3. 系统程序
 
-## Job
+### Job
 
 `Job`负责处理一次性任务。
 
@@ -661,11 +642,11 @@ kubectl rollout undo deployment deploy-demo --to-revision=1
 
 重启策略为：仅当任务未完成的异常退出时重启。
 
-## CronJob
+### CronJob
 
 `CronJob`周期性运行任务，即定时任务，重复创建`Job`来执行任务。
 
-## StatefulSet
+### StatefulSet
 
 管理有状态应用（对应Deployments和ReplicaSets是为无状态应用而设计），并且每个副本被单独管理。
 
