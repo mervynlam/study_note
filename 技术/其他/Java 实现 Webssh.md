@@ -132,8 +132,9 @@ WSSHClient.prototype.connect = function (options) {
 
     this._connection.onopen = function () {
         options.onConnect();
-        //开始连接，启动心跳检查
-        heartCheck.start();
+        //避免还没连接上就判断心跳异常，这里不启动心跳检查
+        //只在ommessage中启动
+        //heartCheck.start();
     };
 
     this._connection.onmessage = function (evt) {
