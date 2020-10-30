@@ -1,4 +1,4 @@
-# 位运算 n & (n-1)
+# 位运算 n & (n-1)、Leetcode231、面试题 05.06
 
 ## 作用
 
@@ -83,6 +83,39 @@ while(n != 0) {
 由此推出
 
 `N!`的质因数`2`的个数为`N - （N二进制中1的个数）`
+
+# Leetcode 231 2的幂
+
+求一个数是否为2的幂。很简单，不再赘述。
+
+```java
+public boolean isPowerOfTwo(int n) {
+    if (n <= 0) return false;
+    return (n&(n-1)) == 0;
+}
+```
+
+# 面试题 05.06. 整数转换
+
+求从A数转成B数，需要改变二进制多少位。
+
+**思路**
+
+求A和B异或后二进制中1的个数。
+
+**代码**
+
+```java
+public int convertInteger(int A, int B) {
+    int diff = A ^ B;
+    int ans = 0;
+    while (diff != 0) {
+        ans++;
+        diff &= (diff-1);
+    }
+    return ans;
+}
+```
 
 # 参考资料
 
