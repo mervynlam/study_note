@@ -33,6 +33,7 @@
    ```bash
    # 先导入签名
    rpm --import https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.8.9/rabbitmq-server-3.8.9-1.el7.noarch.rpm.asc
+   # rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc
    # 再安装rabbitmq
    yum install rabbitmq-server-3.8.9-1.el7.noarch.rpm
    ```
