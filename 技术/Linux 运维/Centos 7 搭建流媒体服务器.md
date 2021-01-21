@@ -37,17 +37,17 @@ events {
 
 # rtmp配置
 rtmp{
-	server{
-		listen 1935;
-		application myapp{
-			live on;
-		}
-		application hls{
-			live on;
-			hls on;
-			hls_path /tmp/hls;
-		}
-	}
+    server{
+        listen 1935;
+        application myapp{
+            live on;
+        }
+        application hls{
+            live on;
+            hls on;
+            hls_path /tmp/hls;
+        }
+    }
 }
 
 http {
@@ -80,15 +80,17 @@ http {
             root   html;
             index  index.html index.htm;
         }
-	
-		location /hls {
-			types{
-				application/vnd.apple.mpegurl m3u8;
-				video/mp2t ts;
-			}
-			root /tmp;
-			add_header Cache-Control no-cache;
-		}
+    
+        location /hls {
+            # 跨域
+            add_header Access-Control-Allow-Origin *;
+            types{
+                application/vnd.apple.mpegurl m3u8;
+                video/mp2t ts;
+            }
+            root /tmp;
+            add_header Cache-Control no-cache;
+        }
 
         #error_page  404              /404.html;
 
