@@ -1,3 +1,56 @@
+[toc]
+
+# FFmpeg 
+
+## 安装 FFmpeg
+
+**安装ffmpeg**
+
+```bash
+#安装epel包
+yum install -y epel-release 
+#导入签名 
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 
+#导入签名 
+rpm --import http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro 
+#升级软件包 
+rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-1.el7.nux.noarch.rpm 
+#更新软件包 
+yum update -y 
+#安装ffmpeg 
+yum install -y ffmpeg ffmpeg-devel
+#检查版本 
+ffmpeg -version
+```
+
+## FFmpeg 实现视频分片及播放
+
+**转码分片、截取封面**
+
+```bash
+ffmpeg -i video.mp4 -c:v libx264 -hls_time 120 -hls_list_size 0 -c:a aac -strict -2 -f hls /transcoding/video.m3u8 
+```
+
+```bash
+ffmpeg -i video.mp4 -y -f mjpeg -ss 3 -t 1 -s 900x500 /transcoding/video.jpg 
+```
+
+**nginx设置**
+
+在`server`节点下添加
+
+```conf
+location /play {
+	alias  /transcoding/;
+}
+```
+
+**访问视频**
+
+`http://192.168.23.241/play/video.m3u8`
+
+# RTMP
+
 **下载nginx-rtmp-module模块**
 
 ```bash
@@ -39,9 +92,6 @@ events {
 rtmp{
     server{
         listen 1935;
-        application myapp{
-            live on;
-        }
         application hls{
             live on;
             hls on;
@@ -105,25 +155,6 @@ http {
 
 ```
 
-**安装ffmpeg**
-
-```bash
-#安装epel包
-yum install -y epel-release 
-#导入签名 
-rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 
-#导入签名 
-rpm --import http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro 
-#升级软件包 
-rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-1.el7.nux.noarch.rpm 
-#更新软件包 
-yum update -y 
-#安装ffmpeg 
-yum install -y ffmpeg 
-#检查版本 
-ffmpeg -version
-```
-
 **启动nginx**
 
 ```bash
@@ -143,3 +174,9 @@ ffmpeg -re -i testVideo.mp4 -vcodec copy -codec copy -f flv rtmp://192.168.247.1
 # 参考资料
 
 [centos7+nginx+rtmp+ffmpeg搭建流媒体服务器](https://www.cnblogs.com/alexliuzw/p/9792074.html)
+
+[如何在CentOS 7上安装和使用FFmpeg](https://www.myfreax.com/how-to-install-ffmpeg-on-centos-7/)
+
+[CentOS 7中搭建基础的Nginx RMPT服务器](https://www.jibing57.com/2020/07/29/how-to-setup-nginx-rtmp-on-centos-7/)
+
+[Nginx RTMP服务器配置](https://www.jibing57.com/2020/08/01/advanced-configure-of-nginx-rtmp)
