@@ -28,11 +28,11 @@ ffmpeg -version
 **转码分片、截取封面**
 
 ```bash
-ffmpeg -i video.mp4 -c:v libx264 -hls_time 120 -hls_list_size 0 -c:a aac -strict -2 -f hls /transcoding/video.m3u8 
+ffmpeg -i video.mp4 -c:v libx264 -hls_time 120 -hls_list_size 0 -c:a aac -strict -2 -f hls /play/video.m3u8 
 ```
 
 ```bash
-ffmpeg -i video.mp4 -y -f mjpeg -ss 3 -t 1 -s 900x500 /transcoding/video.jpg 
+ffmpeg -i video.mp4 -y -f mjpeg -ss 3 -t 1 -s 900x500 /play/video.jpg 
 ```
 
 **nginx设置**
@@ -41,15 +41,25 @@ ffmpeg -i video.mp4 -y -f mjpeg -ss 3 -t 1 -s 900x500 /transcoding/video.jpg
 
 ```conf
 location /play {
-	alias  /transcoding/;
+	alias  /play/;
 }
+# location /play {
+#    root /;
+#    # 跨域
+#    add_header Access-Control-Allow-Origin *;
+#    types{
+#        application/vnd.apple.mpegurl m3u8;
+#        video/mp2t ts;
+#    }
+#    add_header Cache-Control no-cache;
+#}
 ```
 
 **访问视频**
 
 `http://192.168.23.241/play/video.m3u8`
 
-# RTMP
+# Centos7 搭建 RTMP 流媒体服务
 
 **下载nginx-rtmp-module模块**
 
@@ -96,6 +106,12 @@ rtmp{
             live on;
             hls on;
             hls_path /tmp/hls;
+            # 不清除旧的ts文件
+            hls_cleanup off;
+            # 从头开始播放
+            hls_type event;
+            # 限制播放列表时长：避免m3u8文件序列没有从0开始
+            hls_playlist_length 100m;
         }
     }
 }
