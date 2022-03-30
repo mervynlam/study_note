@@ -63,7 +63,9 @@ private RedisTokenStore redisTokenStore;
 public List<OnlineUserVo> getOnlineUserList() {
     List<OnlineUserVo> list = new ArrayList<>();
     //oauth存放的所有keys
-    Set<String> keys = redisTemplate.keys(OnlineConstants.REDIS_AUTH_KEY + "*");
+    // Set<String> keys = redisTemplate.keys(OnlineConstants.REDIS_AUTH_KEY + "*");
+    //经elliotxiang提醒，keys会影响redis使用，修改为scan
+    Set<String> keys = scan(REDIS_AUTH_KEY);
     for (String key : keys) {
         //keys = "auth:" + token
         //根据token获取OAuth2AccessToken
@@ -92,6 +94,20 @@ public List<OnlineUserVo> getOnlineUserList() {
     }
     return list;
 }
+
+/
+public Set<String> scan(String matchKey) {
+    Set<String> keys = (Set<String>) redisTemplate.execute((RedisCallback<Set<String>>) connection -> {
+        Set<String> keysTmp = new HashSet<>();
+        Cursor<byte[]> cursor = connection.scan(new ScanOptions.ScanOptionsBuilder().match(matchKey + "*").count(1000).build());
+        while (cursor.hasNext()) {
+            keysTmp.add(new String(cursor.next()));
+        }
+        return keysTmp;
+    });
+
+    return keys;
+}
 ```
 
 **获取在线用户数**
@@ -100,7 +116,9 @@ public List<OnlineUserVo> getOnlineUserList() {
 
 ```java
 public Integer getOnlineUserNum() {
-    Set<String> keys = redisTemplate.keys(OnlineConstants.REDIS_AUTH_KEY + "*");
+    //Set<String> keys = redisTemplate.keys(OnlineConstants.REDIS_AUTH_KEY + "*");
+    //经elliotxiang提醒，keys会影响redis使用，修改为scan
+    Set<String> keys = scan(REDIS_AUTH_KEY);
     return keys.size();
 }
 ```
