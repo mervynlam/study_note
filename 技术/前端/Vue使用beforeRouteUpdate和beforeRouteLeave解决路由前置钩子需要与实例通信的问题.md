@@ -32,35 +32,10 @@
 
 由于项目的登录对话框是写在`header`中的，看起来很符合`beforeRouteUpdate`的使用场景，无论路由如何改变，`header`都是复用的，并且还可以访问组件实例`this`，岂不是可以直接操作`loginFlag`来打开登录对话框了。
 
-但是如官网文档描述的：
-
-> 1. 导航被触发。
-> 2. 在失活的组件里调用 `beforeRouteLeave` 守卫。
-> 3. 调用全局的 `beforeEach` 守卫。
-> 4. 在重用的组件里调用 `beforeRouteUpdate` 守卫(2.2+)。
-> 5. 在路由配置里调用 `beforeEnter`。
-> 6. 解析异步路由组件。
-> 7. 在被激活的组件里调用 `beforeRouteEnter`。
-> 8. 调用全局的 `beforeResolve` 守卫(2.5+)。
-> 9. 导航被确认。
-> 10. 调用全局的 `afterEach` 钩子。
-> 11. 触发 DOM 更新。
-> 12. 调用 `beforeRouteEnter` 守卫中传给 `next` 的回调函数，创建好的组件实例会作为回调函数的参数传入。
-
-在调用`beforeRouteUpdate`的时候，已经执行过全局的前置钩子`beforeEach`了，为了避免用户直接关掉对话框继续访问需登录的内容。在`beforeRouteUpdate`中需要跳转回前一个页面（目前没想到更好的方法处理这个问题）。
-
 ```js
 beforeRouteUpdate(to, from, next) {
     let token = getToken()
     if (to.meta.needLogin && !token) {
-        //先执行next()
-        next()
-        //然后跳转回前一个路由
-        this.$router.push({
-            name: from.name,
-            query: from.query,
-            params: from.params
-        })
         //打开登录对话框
         this.loginFlag = true
     } else {
