@@ -275,7 +275,151 @@ B树与B+树区别：
 
 虽然部分条件可能导致索引失效，但联合索引中包含该字段，可以在二级索引将条件排查后，缩小范围再回表。
 
-# `Explain`（TODO）
+# `Explain`
+
+## `table`
+
+这一列显示了对应行正在访问哪个表。每一条记录对应一个单表，`JOIN`涉及（被）驱动表，或偶有临时表。
+
+不论查询语句有多复杂，里面包含了多少个表，到最后也是需要对每个表进行单表访问的，所以MySQL规定，`Explain`语句输出的每条记录都对应着某个单表的访问，该条记录的`table`列代表着该表的表名。
+
+## `id`
+
+在一个大查询语句中，每个`select`对应一个唯一的`id`
+
+- `id`如果相同，可以认为是一组，从上往下顺序执行
+- 在所有组中，`id`值越大，优先级越高，越先执行
+- `id`号每个号码，表示一趟独立的查询，一个`sql`的查询趟数越少越好
+
+## `select_type`
+
+这一行显示了对应行是简单还是复杂`select`。
+
+`simple`值意味着查询不包括子查询和`union`。如果查询有任何复杂的子部分，那么最外层部分标记为`primary`，其余部分标记如下
+
+- `subquery`
+
+  包含在`select`列表中的子查询中的`select`
+
+- `derived`
+
+  包含在`from`子句的子查询的`select`，会递归执行并将结果放到一个临时表中，称为**派生表**
+
+- `union`
+
+  在`union`中第二个和随后的`select`
+
+- `union result`
+
+  `union`的临时结果集
+
+`dependent`意味着`select`依赖于外层查询中发现的数据。
+
+| 名称                   | 描述                                                         |
+| ---------------------- | ------------------------------------------------------------ |
+| `Simple`               | Simple select(not using UNION or subqueries)                 |
+| `Primary`              | Outermost select                                             |
+| `Union`                | Second or later select statement in a union                  |
+| `Union` result         | result of a union                                            |
+| `Subquery`             | First select in subquery                                     |
+| `Dependent subquery`   | First select in subquery, dependent on outer query           |
+| `Dependent union`      | Second or later select statement in a union, dependent on outer query |
+| `Derived`              | Derived table                                                |
+| `Materialized`         | Materialized subquery                                        |
+| `Uncacheable subquery` | A sub query for which the result cannot be cached and must be re-evaluated for each row of the outer query |
+| `Uncacheable union`    | The second or later select in a union that belongs to an uncacheable subquery |
+
+## `partitions`
+
+匹配的分区信息
+
+## `type`
+
+表示了MySQL决定使用什么方式访问表中的行。
+
+- `system`
+
+  当表中只有一条记录且使用统计数据是精确的的存储引擎时
+
+- `const`
+
+  根据主键或唯一索引与常量等值匹配时
+
+- `eq_ref`
+
+  连接查询时，被驱动表通过主键或唯一索引匹配
+
+- `ref`
+
+  普通二级索引与常数等值匹配
+
+- `fulltext`
+
+  全文索引
+
+- `ref_or_null`
+
+  意味着MySQL在`ref`初次查找的结果里进行第二次查找以找出`NULL`条目
+
+- `index_merge`
+
+  合并多个索引
+
+- `unique_subquery`
+
+- `index_subquery`
+
+- `range`
+
+  范围查找
+
+- `index`
+
+  当可以使用索引覆盖，但仍然需要全表扫描时
+
+- `all`
+
+  全表扫描
+
+## `possible_keys`
+
+显示了查询可能使用哪些索引，这是基于查询访问的列和使用的比较操作符来判断的。这个列表是在优化过程的早期创建的，因此有些罗列出来的索引可能对于后续优化过程是没用的。
+
+## `key`
+
+显示了MySQL决定采用那个索引来优化对该表的访问。如果该索引没有出现在`possible_keys`中，那么MySQL选用它是出于另外的原因——例如，它可能选择了一个覆盖索引，哪怕没有`where`子句。
+
+## `key_len`
+
+显示了MySQL在索引里使用的字节数。主要针对联合索引。
+
+## `ref`
+
+这一列显示了之前的表在`key`列记录的索引中查找值所用的列或常数。
+
+## `rows`
+
+是MySQL估计为了找到所需的行而需要扫描的行数
+
+## `filtered`
+
+表示针对表里符合某个条件的记录数的百分比所作出的一个悲观估算。
+
+## `extra`
+
+包含一些额外信息
+
+- `Impossible where`
+
+  `where`永远为`false`
+
+- `using index`
+
+  使用了覆盖索引，不需要回表
+
+- `using where`
+
+  MySQL服务器将在存储引擎检索行后再进行过滤。
 
 # 范式
 
