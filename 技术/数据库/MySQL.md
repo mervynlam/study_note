@@ -101,7 +101,153 @@
 
 - 对于`MyISAM`，如果是小型应用，系统以读、插入为主，很少更新、删除操作，并且对失误要求没有这么高，可以选择。占用空间小，处理速度快。不支持事务。表锁，不适合高并发操作。
 
-# `InnoDB`行格式（TODO）
+# `InnoDB`行格式
+
+## 数据页内部结构
+
+默认16KB
+
+| 名称                  | 占用大小 | 说明                                 |
+| --------------------- | -------- | ------------------------------------ |
+| `File Header`         | 38字节   | 文件头，描述页的信息                 |
+| `Page Header`         | 56字节   | 页头，页的状态信息                   |
+| `Infimum`和`Supremum` | 26字节   | 最大和最小记录，这是两个虚拟的行记录 |
+| `User Records`        | 不确定   | 用户记录，存储行记录内容             |
+| `Free Space`          | 不确定   | 空闲记录，页中还没有被使用的空间     |
+| `Page Directory`      | 不确定   | 页目录，存储用户记录的相对位置       |
+| `File Trailer`        | 8字节    | 文件尾，校验页是否完整               |
+
+
+
+### `FileHeader`
+
+描述各种页的通用信息
+
+- `Fil_page_offset`，页号，`InnoDB`通过页号可以唯一定位一个页
+
+- `Fil_page_type`，页的类型
+
+  ![1](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302262242690.png)
+
+- `File_page_prev`和`Fil_page_next`，上一页，下一页的页号，通过双向链表连接各页，实现不需要物理连接，而是逻辑连接
+
+- `Fil_page_space_or_chksum`，校验和，通过与文件尾的校验和比对，判断页在磁盘`IO`时是否出现异常
+
+- `Fil_page_lsn`，`Log Sequence Number`，页面被最后修改时对应的日志序列位置
+
+### `File Trailer`
+
+包含**校验和**和**LSN**，为了校验页的完整性
+
+### `Free Space`
+
+页内存储记录的部分的剩余空间
+
+### `User Records`
+
+记录按照指定的行格式存放在这里，形成**单链表**
+
+### `Infimum`和`Supremum`
+
+最大记录和最小记录，`heap_no`分别对应`0`和`1`，`record_type`分别对应`2`和`3`
+
+### `Page Directory`
+
+用来存储每组最后一条记录的地址偏移量。这些地址偏移量会按照先后顺序存储起来，每组的地址偏移量也被称为`slot`槽，每个槽想到与指向了不同组的最后一个记录。通过二分法找到具体的组（由于页目录记录的是组中最大记录，而记录是单向链表，所以需找到上一组的槽，然后往后找记录），再到组中查找数据。
+
+- 第1组，包含最小记录，只有1条记录
+- 最后一组，是最大记录所在分组，有1-8条记录
+- 其余组记录数量在4-8条
+
+每个组中最后一条记录的头部信息中，会存储改组一共有多少条记录，作为`n_owned`
+
+![image-20230227151126284](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271511347.png)
+
+### `Page Header`
+
+![image-20230227151526103](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271515165.png)
+
+## `InnoDB`行格式（记录格式）
+
+### `Compact`行格式
+
+![](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271445657.png)
+
+#### 变长字段长度列表
+
+在Compact行格式中，把所有变长字段的真实数据占用的字节长度都存放在记录的开头部位，从而形成一个变长字段长度列表。这个列表与字段顺序是相反的。
+
+#### NULL值列表
+
+Compact行格式会把可以为NULL的列统一管理起来，存在一个标记为NULL值列表中。如果表中没有允许存储 NULL 的列，则 NULL值列表也不存在了。同样是与字段顺序相反，跳过`not null`字段。
+
+- `1`，表示该值为`NULL`
+- `0`，表示该值不为`NULL`
+
+#### 记录头信息
+
+![image-20230227144720948](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271447998.png)
+
+- `delete_mask`，标记当前记录是否被删除
+
+  如果真实删除记录，其他记录需要重新排列，导致性能消耗。
+
+- `min_rec_mask`，非叶子节点的最小记录都会添加该标记，值为1
+
+- `record_type`，这个属性表示当前记录的类型，一共有4种类型的记录
+
+  - `0`，普通记录
+  - `1`，非叶子节点记录
+  - `2`，最小记录
+  - `3`，最大记录
+
+- `heap_no`，表示当前记录在本页的位置，最小记录为0，最大记录为1
+
+- `n_owned`，页目录中每个组最后一条记录的头信息中会存储该组一共有多少条记录
+
+- `next_record`，表示从当前记录的真实数据到下一条记录的真实数据的**地址偏移量**
+
+  ![image-20230227150111355](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271501408.png)
+
+  - 删除记录
+
+    ![image-20230227150233566](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271502617.png)
+
+  - 添加记录
+
+    ![image-20230227150313822](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271503874.png)
+
+#### 记录的真实数据
+
+除了记录真实字段的值外，MySQL还维护了3个隐藏字段
+
+- `row_id`，行ID，唯一标识一条记录，当表结构没有定义主键时，该字段作为隐藏主键存在
+- `transaction_id`，事务id，当前记录版本的修改事务ID。详见MVCC
+- `roll_pointer`，回滚指针，记录了该记录的历史版本的指针列表。详见MVCC
+
+### 行溢出
+
+一个页的大小一般是16KB，也就是16384字节，而一个VARCHAR(M)类型的列就最多可以存储65533个字节，这样就可能出现一个页存放不了一条记录，这种现象称为行溢出。 
+
+在`Compact`和`Reduntant`行格式中，对于占用存储空间非常大的列，在记录的真实数据处只会存储该列的一部分数据，把剩余的数据分散存储在几个其他的页中进行分页存储，然后记录的真实数据处用20个字节存储指向这些页的地址
+
+### `Dynamic`和`Compressed`行格式
+
+`Compressed`和`Dynamic`两种记录格式对于存放在BLOB中的数据采用了完全的行溢出的方式。如图，在数据页中只存放20个字节的指针（溢出页的地址），实际的数据都存放在`Off Page`（溢出页）中。
+
+`Compressed`行记录格式的另一个功能就是，存储在其中的行数据会以`zlib`的算法进行压缩，因此对于BLOB、TEXT、VARCHAR这类大长度类型的数据能够进行非常有效的存储。
+
+![image-20230227162253043](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271622082.png)
+
+### `Redundant`行格式
+
+![image-20230227162419482](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271624524.png)
+
+注意`Compact`行格式的开头是变长字段长度列表，而`Redundant`行格式的开头是字段长度偏移列表，与变长字段长度列表有两处不同：
+
+- 少了“变长”两个字：Redundant行格式会把该条记录中所有列（包括隐藏列）的长度信息都按照逆序存储到字段长度偏移列表。
+
+- 多了“偏移”两个字：这意味着计算列值长度的方式不像Compact行格式那么直观，它是采用两个相邻数值的差值来计算各个列值的长度。
 
 # 索引
 
