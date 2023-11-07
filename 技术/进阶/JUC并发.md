@@ -157,7 +157,7 @@ while (!condition) {
 
 `corePoolSize`为0，`maximumPoolSize`为`Integer.MAX_VALUE`。
 
-![image-20230912181335716](https://raw.githubusercontent.com/mervynlam/Pictures/master/202309121813770.png)
+![202309121813770](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071612234.jpg)
 
 ## `CompletableFuture`
 
@@ -608,7 +608,7 @@ final void longAccumulate(long x, LongBinaryOperator fn,
 
 Thread类维护了`ThreadLocalMap`类型的变量，`ThreadLocalMap`是`TreadLocal`的内部类。
 
-![image-20230914170308201](https://raw.githubusercontent.com/mervynlam/Pictures/master/202309141703274.png)
+![202309141703274](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071613831.jpg)
 
 ```java
 public class Thread implements Runnable {
@@ -682,11 +682,11 @@ Java 6之后，为了减少获得锁和释放锁所带来的性能消耗，引�
 轻量锁适应的场景是：各线程交替执行同步块，大部分的锁在同步周期内不存在长时间的竞争。
 
 
-![img](https://raw.githubusercontent.com/mervynlam/Pictures/master/202309142208182.jpeg)
+![img](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071613798.jpeg)
 
-![img](https://raw.githubusercontent.com/mervynlam/Pictures/master/202309141909239.jpeg)
+![202309141909239](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071614981.jpg)
 
-![img](https://raw.githubusercontent.com/mervynlam/Pictures/master/202309161759285.jpeg)
+![202309161759285](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071614917.jpg)
 
 ## `AQS(AbstractQueuedSynchronizer)`
 
@@ -698,7 +698,7 @@ Java 6之后，为了减少获得锁和释放锁所带来的性能消耗，引�
 
 #### 关系图
 
-![image-20230916185504209](https://raw.githubusercontent.com/mervynlam/Pictures/master/202309161855269.png)
+![image-20230916185504209](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071614873.png)
 
 `ReentrantLock`中的内部类`Sync`继承了`AQS`类，公平锁`FairSync`和非公平锁`NonfairSync`继承了`Sync`。
 

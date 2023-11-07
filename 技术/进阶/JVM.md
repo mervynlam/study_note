@@ -4,7 +4,7 @@
 
 Java虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域有各自的用途，以及创建和销毁的时间， 有的区域随着虚拟机进程的启动而一直存在，有些区域则是依赖用户线程的启动和结束而建立和销毁。
 
-![image-20230302125908641](https://raw.githubusercontent.com/mervynlam/Pictures/master/202303021259740.png)
+![202303021259740](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071615566.jpg)
 
 ### 程序计数器（`Program Counter Register  `）
 
@@ -40,7 +40,7 @@ Java堆可以处于物理上不连续的内存空间中， 但在逻辑上它应
 
 与Java堆一样，是线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。
 
-垃圾手机行为在这个区域比较少出现，该区域的内存回收目标主要是针对常量池的回收和对类型的卸载。
+垃圾收集行为在这个区域比较少出现，该区域的内存回收目标主要是针对常量池的回收和对类型的卸载。
 
 ### 运行时常量池（`Runtime Constant Pool  `）
 
@@ -121,9 +121,9 @@ JDK1.4 中新加入的 **NIO(New Input/Output) 类，引入了一种基于通道
 
 这两种对象访问方式各有优势。使用句柄来访问的最大好处是 reference 中存储的是稳定的句柄地址，在对象被移动时只会改变句柄中的实例数据指针，而 reference 本身不需要修改。使用直接指针访问方式最大的好处就是速度快，它节省了一次指针定位的时间开销。
 
-![image-20230302141453506](https://raw.githubusercontent.com/mervynlam/Pictures/master/202303021414552.png)
+![202303021414552](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071616639.jpg)
 
-![image-20230302141500145](https://raw.githubusercontent.com/mervynlam/Pictures/master/202303021415181.png)
+![202303021415181](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071616143.jpg)
 
 # JVM垃圾回收
 
@@ -139,7 +139,7 @@ JDK1.4 中新加入的 **NIO(New Input/Output) 类，引入了一种基于通道
 
 通过一系列称为`GC Roots`的跟对象作为起始节点集，从这些节点开始，根据引用关系乡下搜索，搜索过程所走的路径称为**引用链**，如果某个对象到`GC Roots`间没有任何引用链相连，则证明此对象是不可能在被使用的。
 
-![image-20230302143428108](https://raw.githubusercontent.com/mervynlam/Pictures/master/202303021434147.png)
+![202303021434147](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071616025.jpg)
 
 固定可以作为`GC Roots`的对象包括：
 
@@ -186,7 +186,7 @@ JDK1.4 中新加入的 **NIO(New Input/Output) 类，引入了一种基于通道
   - 新生代收集（`Minor GC \ Young GC`），新生代的垃圾收集
   - 老年代收集（`Major GC \ Old GC`），老年代的垃圾收集
   - 混合收集（`Mixed GC`），收集整个新生代以及部分老年代的垃圾收集
-- 整堆收集（`Full GC`），手机整个Java堆和方法区的垃圾收集
+- 整堆收集（`Full GC`），收集整个Java堆和方法区的垃圾收集
 
 ### 分代收集算法
 
@@ -205,7 +205,7 @@ JDK1.4 中新加入的 **NIO(New Input/Output) 类，引入了一种基于通道
 - 执行效率不稳定，Java堆中包含大量对象，其中大部分是需要被回收的，这时需要进行大量标记和清除的动作，导致效率都随数量增长而降低
 - 内存空间的碎片化问题，清除后会产生大量**不连续的内存碎片**，空间碎片太多可能会导致当以后在程序运行中需要分配较大对象时无法找到足够的连续内存而不得不提前出发一次垃圾收集行为。
 
-![image-20230302152407257](https://raw.githubusercontent.com/mervynlam/Pictures/master/202303021524295.png)
+![image-20230302152407257](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071616382.png)
 
 ### 标记-复制算法
 
@@ -215,7 +215,7 @@ JDK1.4 中新加入的 **NIO(New Input/Output) 类，引入了一种基于通道
 
 代价是将可用内存缩小为了原来的一般，空间浪费太多。
 
-![image-20230302152637457](https://raw.githubusercontent.com/mervynlam/Pictures/master/202303021526491.png)
+![image-20230302152637457](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071617356.png)
 
 大多虚拟机有限采用了这种收集算法去回收**新生代**
 
@@ -227,7 +227,7 @@ JDK1.4 中新加入的 **NIO(New Input/Output) 类，引入了一种基于通道
 
 针对老年代对象的特征提出的一种算法。标记过程仍然与标记-清除一样，但后续步骤是让所有存活的对象都向空间一端移动，然后直接清理掉边界以为的内存。
 
-![image-20230302153231748](https://raw.githubusercontent.com/mervynlam/Pictures/master/202303021532785.png)
+![image-20230302153231748](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071617333.png)
 
 ## `HotSpot`算法细节
 
@@ -260,13 +260,13 @@ JDK1.4 中新加入的 **NIO(New Input/Output) 类，引入了一种基于通道
 
 Serial对于运行在Client的虚拟机来说是很好的选择。
 
-![image-20230302160009672](https://raw.githubusercontent.com/mervynlam/Pictures/master/202303021600174.png)
+![202303021600174](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071617962.jpg)
 
 ### `ParNew`
 
 `ParNew`实质上是`Serial`的多线程并行版本。除了使用多线程进行垃圾收集外，其余行为与`Serial`完全一致。
 
-![image-20230302160226731](https://raw.githubusercontent.com/mervynlam/Pictures/master/202303021602771.png)
+![202303021602771](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071617845.jpg)
 
 **并行和并发概念补充：**
 
@@ -296,14 +296,14 @@ Serial对于运行在Client的虚拟机来说是很好的选择。
 3. 重新标记：为了修正并发标记期间，因用户程序继续运作而导致标记产生变动的那一部分对象的标记记录，采用增量更新的方法。需要暂停用户线程。
 4. 并发清除：清理删除掉标记阶段判断已经死亡的对象，由于不需要移动存活的对象，这个阶段可以与用户线程并发进行。
 
-![image-20230302161816472](https://raw.githubusercontent.com/mervynlam/Pictures/master/202303021618526.png)
+![202303021618526](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071618236.jpg)
 
 **优点**：并发收集、低停顿
 
 **缺点**：
 
 - 对CPU资源非常敏感
-- 无法处理浮动垃圾，由于用户线程是还在继续运行的，程序在运行自然会不断产生垃圾，但这一部分垃圾对象是出现在标记过程结束以后，`CMS`无法在当次手机处理他们。如果在运行期间预留的内存无法满足程序分配新对象的需求，就会出现一次**并发失败**，导致一次暂停用户线程而启动`Serial Old`收集器来进行老年代的垃圾收集
+- 无法处理浮动垃圾，由于用户线程是还在继续运行的，程序在运行自然会不断产生垃圾，但这一部分垃圾对象是出现在标记过程结束以后，`CMS`无法在当次收集处理他们。如果在运行期间预留的内存无法满足程序分配新对象的需求，就会出现一次**并发失败**，导致一次暂停用户线程而启动`Serial Old`收集器来进行老年代的垃圾收集
 - 由于基于标记-清除算法实现，会产生大量空间碎片。
 
 ### `G1 - Garbage First`
@@ -345,7 +345,7 @@ Serial对于运行在Client的虚拟机来说是很好的选择。
 
 #### 运作过程
 
-![image-20230302175450217](https://raw.githubusercontent.com/mervynlam/Pictures/master/202303021754254.png)
+![202303021754254](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071618059.jpg)
 
 - 并发标记（`Concurrent Mark`）：便利对象图做可达性分析的阶段，前后也要经过初始标记、最终标记的短暂停顿。`ZGC`的标记是在指针上而不是在对象上。
 - 并发预备重分配（`Concurrent Prepare for Relocate`）：需要根据特定的查询条件统计得出本次收集过程要清理哪些`Region`，将这些`Region`组成重分配组。`ZGC`每次回收都会扫描所有的`Region`，用范围更大的扫描成本换取省去`G1`记忆集的维护成本。因此重分配集只决定了里面的存活对象会被复制到其他`Region`中，里面的`Region`会被释放

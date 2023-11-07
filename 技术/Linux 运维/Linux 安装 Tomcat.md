@@ -1,6 +1,6 @@
 [tomcat下载地址](https://tomcat.apache.org/download-80.cgi)
 
-![image-20200929094150755](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200929094221.png)
+![20200929094221](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071635550.jpg)
 
 1. 下载 tomcat
 

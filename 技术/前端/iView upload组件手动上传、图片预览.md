@@ -4,7 +4,7 @@
 
 [iview文档](https://www.iviewui.com/components/upload#SDSC)中并没有实际的上传操作
 
-![image-20211008172847903](https://raw.githubusercontent.com/mervynlam/Pictures/master/20211008172858.png)
+![image-20211008172847903](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071627744.png)
 
 **实现**
 
@@ -35,7 +35,7 @@ upload() {
 }
 ```
 
-![image-20211008173306727](https://raw.githubusercontent.com/mervynlam/Pictures/master/20211008173306.png)
+![image-20211008173306727](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071627909.png)
 
 ## 手动上传图片展示
 
@@ -76,9 +76,9 @@ handleUpload(file) {
 
 **效果**
 
-![image-20211008174010641](https://raw.githubusercontent.com/mervynlam/Pictures/master/20211008174010.png)
+![image-20211008174010641](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071627712.png)
 
-![image-20211008174106831](https://raw.githubusercontent.com/mervynlam/Pictures/master/20211008174106.png)
+![20211008174106](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071627826.jpg)
 
 ## 参考资料
 

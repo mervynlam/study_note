@@ -94,7 +94,7 @@ protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, A
 
 #### 完整流程
 
-![image](https://raw.githubusercontent.com/mervynlam/Pictures/master/202309111901989.png)
+![202309111901989](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071610087.jpg)
 
 1. 导入场景启动器
    1. 场景启动器导入了相关场景的所有核心依赖

@@ -13,15 +13,15 @@ NoCortY的博客：[使用纯Java实现一个WebSSH项目](https://blog.objectsp
 
 ### 自适应宽高
 
-![autoFit](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200925100444.gif)
+![autoFit](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071625965.gif)
 
 ### 心跳检查
 
-![heartbeat](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200925101005.gif)
+![heartbeat](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071626455.gif)
 
 ### 断开自动重连
 
-![reconnect](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200925101148.gif)
+![reconnect](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071626826.gif)
 
 ## 关键代码
 

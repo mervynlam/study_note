@@ -14,7 +14,7 @@ java -version
 ```bash
 yum list installed |grep java
 ```
-![image-20200910140246956](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200910140247.png)
+![image-20200910140246956](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071636546.png)
 
 卸载
 
@@ -60,7 +60,7 @@ java -version
 rpm -qa|grep java
 ```
 
-![image-20200910134824346](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200910140255.png)
+![image-20200910134824346](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071636205.png)
 
 **卸载**
 

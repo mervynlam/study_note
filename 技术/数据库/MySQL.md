@@ -35,7 +35,7 @@
 - 采用行级锁
 - 适合日志何数据采集类应用，适合存储大量的独立的作为历史记录的数据。拥有很高的插入速度。
 
-![image-20230224111535847](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302241115931.png)
+![202302241115931](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071628510.jpg)
 
 ## `Blackhole`：丢弃写操作，读操作返回空
 
@@ -127,7 +127,7 @@
 
 - `Fil_page_type`，页的类型
 
-  ![1](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302262242690.png)
+  ![1](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071628351.png)
 
 - `File_page_prev`和`Fil_page_next`，上一页，下一页的页号，通过双向链表连接各页，实现不需要物理连接，而是逻辑连接
 
@@ -161,17 +161,17 @@
 
 每个组中最后一条记录的头部信息中，会存储改组一共有多少条记录，作为`n_owned`
 
-![image-20230227151126284](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271511347.png)
+![202302271511347](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071628723.jpg)
 
 ### `Page Header`
 
-![image-20230227151526103](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271515165.png)
+![202302271515165](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071628991.jpg)
 
 ## `InnoDB`行格式（记录格式）
 
 ### `Compact`行格式
 
-![](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271445657.png)
+![202302271445657](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071629003.jpg)
 
 #### 变长字段长度列表
 
@@ -186,7 +186,7 @@ Compact行格式会把可以为NULL的列统一管理起来，存在一个标记
 
 #### 记录头信息
 
-![image-20230227144720948](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271447998.png)
+![202302271447998](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071629994.jpg)
 
 - `delete_mask`，标记当前记录是否被删除
 
@@ -207,15 +207,15 @@ Compact行格式会把可以为NULL的列统一管理起来，存在一个标记
 
 - `next_record`，表示从当前记录的真实数据到下一条记录的真实数据的**地址偏移量**
 
-  ![image-20230227150111355](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271501408.png)
+  ![202302271501408](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071629777.jpg)
 
   - 删除记录
 
-    ![image-20230227150233566](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271502617.png)
+    ![202302271502617](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071629829.jpg)
 
   - 添加记录
 
-    ![image-20230227150313822](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271503874.png)
+    ![202302271503874](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071629786.jpg)
 
 #### 记录的真实数据
 
@@ -237,11 +237,11 @@ Compact行格式会把可以为NULL的列统一管理起来，存在一个标记
 
 `Compressed`行记录格式的另一个功能就是，存储在其中的行数据会以`zlib`的算法进行压缩，因此对于BLOB、TEXT、VARCHAR这类大长度类型的数据能够进行非常有效的存储。
 
-![image-20230227162253043](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271622082.png)
+![image-20230227162253043](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071630596.png)
 
 ### `Redundant`行格式
 
-![image-20230227162419482](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302271624524.png)
+![image-20230227162419482](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071630951.png)
 
 注意`Compact`行格式的开头是变长字段长度列表，而`Redundant`行格式的开头是字段长度偏移列表，与变长字段长度列表有两处不同：
 
@@ -697,11 +697,11 @@ B树与B+树区别：
 
 `lock`的对象是事务，用来锁定的是数据库中的对象，如表、页、行。并且一般的`lock`的对象仅在`commit`或`rollback`后进行释放。
 
-![image-20230221131645352](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302211316443.png)
+![202302211316443](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071630224.jpg)
 
 ## 不同角度分类锁
 
-![image-20230220153159567](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302201532786.png)
+![202302201532786](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071630809.jpg)
 
 ## 从数据操作类型分
 
@@ -711,7 +711,7 @@ B树与B+树区别：
 
   `select ... for update`语句加`X`锁时，会把**所有扫描的行**锁上，因此在`MySQL`中使用悲观锁必须确保使用了索引，而不是全表扫描。
 
-![image-20230221131841686](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302211318710.png)
+![image-20230221131841686](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071630872.png)
 
 ## 从数据操作的粒度分
 
@@ -727,7 +727,7 @@ B树与B+树区别：
 >
 > 若其中任何一个部分导致等待，那么该操作需要等待粗粒度锁的完成。比如，在对记录`R`加`X`锁之前，已经有事务对表1进行了`S`表锁，那么表1上已经存在`S`锁，之后事务需要对记录`R`在表1上加`IX`，由于不兼容，所以该事务需要等待表锁操作完成。
 >
-> ![image-20230221132513381](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302211325438.png)
+> ![202302211325438](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071630738.jpg)
 
 `InnoDB`引擎支持意向锁的设计比较简练，其意向锁即为**表级别**的锁。设计目的主要是为了在一个事务中揭示下一行将被请求的锁类型：
 
@@ -736,15 +736,15 @@ B树与B+树区别：
 
 由于`InnoDB`支持的是行级别的锁，因此意向锁不会阻塞除全表扫描以外的任何请求。兼容性如下图所示。
 
-![image-20230221132642125](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302211326151.png)
+![202302211326151](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071631609.jpg)
 
 #### 自增锁（`AUTO-INC Locking`）
 
 自增锁是针对插入自增长属性时的特殊的表级锁。为了提高插入的性能，锁不是在事务完成后才释放，而是在完成对自增长值插入的SQL语句后立即释放。事务必须等待前一个插入完成（不需要等待事务的完成）。
 
-![image-20230221134242549](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302211342581.png)
+![202302211342581](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071631610.jpg)
 
-![image-20230221134248313](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302211342350.png)
+![202302211342350](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071631563.jpg)
 
 ### `InnoDB`中的行锁
 
@@ -819,7 +819,7 @@ B树与B+树区别：
 - `trx_id`每次一个事务对某条聚簇索引记录进行改动时，都会把该事务的事务ID赋值给`trx_id`隐藏列
 - `roll_pointer`每次对某条聚簇索引记录进行改动时，都会把旧的版本写入到`undo日志`中，该隐藏字段相当于一个指针，通过它找到该记录修改前的信息。
 
-![image-20230222114407145](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302221144275.png)
+![202302221144275](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071631105.jpg)
 
 ## Undo Log
 
@@ -945,9 +945,9 @@ B树与B+树区别：
 
   当用户读取一行记录室，若该记录已经被其他事务占用，当前事务可以通过`undo`读取之前的行版本信息，以此实现非锁定读取。
 
-![image-20230224190608259](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302241906374.png)
+![202302241906374](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071631826.jpg)
 
-![image-20230224190550414](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302241905559.png)
+![202302241905559](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071632367.jpg)
 
 ## 通用查询日志（`general query log`）
 
@@ -982,7 +982,7 @@ B树与B+树区别：
 - `1`，每次提交事务都`write`且执行`fsync`
 - `N`，每个事务提交都`write`，但累计`N`个事务后才`fsync`
 
-![image-20230223151421234](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302231514355.png)
+![202302231514355](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071632633.jpg)
 
 ### `binlog`和`redo log`对别
 
@@ -1004,9 +1004,9 @@ B树与B+树区别：
 
 在写入`bin log`前后都写入`redo log`，判断处在`commit`阶段且不存在对应的`binlog`，就回滚事务。
 
-![image-20230223152359747](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302231523828.png)
+![202302231523828](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071632646.jpg)
 
-![image-20230223152423224](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302231524313.png)
+![202302231524313](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071632603.jpg)
 
 ### 格式
 
@@ -1038,7 +1038,7 @@ B树与B+树区别：
 
 在主从复制的过程中，由三个线程实现，一个主库线程，两个从库线程。
 
-![image-20230223181137532](https://raw.githubusercontent.com/mervynlam/Pictures/master/202302231811590.png)
+![202302231811590](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071633198.jpg)
 
 `二进制日志转储线程`，是主库线程。当从库线程连接的时候，主库可以将二进制日志发送给从库，当主库读取事件的时候，会在`binlog`上加锁，读取完成之后，再释放锁。
 

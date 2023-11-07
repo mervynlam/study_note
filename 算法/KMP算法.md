@@ -12,7 +12,7 @@ KMP主要思想：当出现字符串不匹配时，可以知道一部分已经�
 
 前缀表存放的是，前`i`个字符组成的前缀`s[0,i]`中，前缀和后缀最长相等的长度。
 
-![image-20221213175227063](https://raw.githubusercontent.com/mervynlam/Pictures/master/202212131801584.png)
+![202212131801592](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071603762.jpg)
 
 ```java
 private void getNext(String str, int[] next) {
@@ -30,7 +30,7 @@ private void getNext(String str, int[] next) {
 
 **匹配**
 
-![image-20221213175941190](https://raw.githubusercontent.com/mervynlam/Pictures/master/202212131801597.png)
+![202212131801597](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071603772.jpg)
 
 当`i==6` `j==6`时，二者不相等，由于前缀表已经记录了最大相等的前后缀，已知`s2[0,j-1]`前缀的最大相等前后缀为`2`，将`j`回退到`next[j-1]`即可避免中间的无用匹配。
 

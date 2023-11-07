@@ -303,7 +303,7 @@ kubectl是api server的客户端程序
 
     `kubectl patch deployment deploy-demo -p '{"spec":{"replicas":5}}' `
 
-![img](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821103335.png)
+![20200821103335](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071633194.jpg)
 
 # yaml配置清单
 
@@ -359,7 +359,7 @@ yaml 格式提供配置清单，apiserver可自动将其转换为json格式，�
             - 指定了`args`没指定`command`，只运行`Entrypoint`并使用`args`参数
             - 如果`command`、`args`均指定，使用`args`参数运行`command`
             
-            ![image-20200825091158807](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200825091410.png)
+            ![image-20200825091158807](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071633602.png)
             
         - `livenessProbe`存活性探测
 
@@ -404,7 +404,7 @@ yaml 格式提供配置清单，apiserver可自动将其转换为json格式，�
 
 ## Pod生命周期
 
-![image-20200827092313725](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200827092315.png)
+![20200827092315](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071634568.jpg)
 
 生命周期中的重要行为：
 
@@ -536,7 +536,7 @@ kubectl edit rs rs-demo
 # 修改了模板，但已有pod镜像并不会更新，因为副本数目正确，pod不会重建。后续重建的pod才会使用更新的镜像。
 ```
 
-![image-20200901160500700](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200901161504.png)
+![20200901161504](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071634191.jpg)
 
 ### Deployment
 
@@ -551,7 +551,7 @@ kubectl edit rs rs-demo
 
 **`Deployments` - `ReplicaSets` - `Pods` 结构**
 
-![image-20200901164018864](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200901164019.png)
+![20200901164019](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071634511.jpg)
 
 创建`Deployment`后，查询`ReplicaSet`发现自动创建了`ReplicaSet`
 
@@ -664,7 +664,7 @@ kubectl rollout undo deployment deploy-demo --to-revision=1
 
   效率低
 
-  ![image-20200909165554593](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200909165554.png)
+  ![20200909165554](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071634231.jpg)
 
 - `iptables`
 
@@ -674,7 +674,7 @@ kubectl rollout undo deployment deploy-demo --to-revision=1
 
   可扩展性
 
-  ![image-20200909165818388](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200909165818.png)
+  ![20200909165818](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071634214.jpg)
 
 - `IPVS`
 
@@ -682,7 +682,7 @@ kubectl rollout undo deployment deploy-demo --to-revision=1
 
   调度算法丰富
   
-  ![image-20200909165235117](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200909165241.png)
+  ![20200909165241](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071635866.jpg)
 
 **DNS资源记录**
 

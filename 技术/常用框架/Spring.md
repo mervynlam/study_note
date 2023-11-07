@@ -86,7 +86,7 @@
 - **`Handler`**：**请求处理器**，处理实际请求的处理器。
 - **`ViewResolver`**：**视图解析器**，根据 `Handler` 返回的逻辑视图 / 视图，解析并渲染真正的视图，并传递给 `DispatcherServlet` 响应客户端
 
-![img](https://raw.githubusercontent.com/mervynlam/Pictures/master/202309111751080.png)
+![img](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071609657.png)
 
 **流程说明（重要）：**
 

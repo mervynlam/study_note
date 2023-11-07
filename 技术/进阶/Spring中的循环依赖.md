@@ -1,7 +1,7 @@
 # 循环依赖
 ## 什么是循环依赖
 从字面上来理解就是A依赖B的同时B也依赖了A，就像下面这样
-![807a0e9cf320c831f9cff20554bafd78.png](https://raw.githubusercontent.com/mervynlam/Pictures/master/202211262309533.png)
+![202211262309533](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071618236.jpg)
 
 体现到代码层次就是这个样子
 ```java

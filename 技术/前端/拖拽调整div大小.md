@@ -1,4 +1,4 @@
-![690ae76d3dc920949ab4c2f7301b3121.gif](https://raw.githubusercontent.com/mervynlam/Pictures/master/20200821112209.gif)
+![690ae76d3dc920949ab4c2f7301b3121.gif](https://mervyn-markdown-images.oss-cn-beijing.aliyuncs.com/202311071626452.gif)
 
 ```html
 <!DOCTYPE html>
